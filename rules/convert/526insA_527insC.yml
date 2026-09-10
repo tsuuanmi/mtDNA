@@ -1,0 +1,12 @@
+MustHave:
+  - 526.1-A
+  - 527.1-C
+MustNotHave:
+Condition:
+Change:
+  Remove:
+  - 526.1-A
+  - 527.1-C
+  Add:
+  - 524.1-A
+  - 524.2-C

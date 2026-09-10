@@ -1,0 +1,6 @@
+{
+  "minimum": 150,
+  "region": ["HV1","HV2","HV3"],
+  "conclusion_threshold": 0,
+  "exclusion_threshold": 2
+}

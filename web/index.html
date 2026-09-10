@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mtDNA Pipeline</title>
+<style>
+  /* Nền tối là mặc định. Mọi màu đều phải là biến ở đây -- một màu viết
+     thẳng trong rule sẽ không đổi theo nền và sẽ chìm hẳn ở nền còn lại. */
+  :root{
+    color-scheme:dark;
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2b3140;
+    --fg:#e6e9ef; --muted:#8b93a7; --faint:#7d8ba3;
+    --accent:#4f8cff; --on-accent:#fff; --accent-soft:#1b2740; --accent-soft2:#1a2333;
+    --ok:#3ecf8e; --ok-bg:#12301f; --ok-line:#245c3c;
+    --warn:#f0b429; --warn-fg:#ffdf9e; --warn-bg:#33280f; --warn-bg2:#221b0d; --warn-line:#5c4a1e;
+    --err:#ff6b6b; --err-fg:#ffb3b3; --err-bg:#3a1f22; --err-bg2:#2a1518;
+    --err-soft:#2a1a1d; --err-line:#5c2a2f;
+    --code-bg:#0b0d12; --code-fg:#9aa5b8; --info:#7fd1ff;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  /* Chưa chọn gì thì theo hệ điều hành; bấm nút thì [data-theme] thắng. */
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      color-scheme:light;
+      --bg:#f4f6f9; --panel:#fff; --panel2:#f1f3f7; --line:#dce0e8;
+      --fg:#171a21; --muted:#5c6575; --faint:#78818f;
+      --accent:#2563eb; --on-accent:#fff; --accent-soft:#e6edfd; --accent-soft2:#eef3ff;
+      --ok:#0f7a4d; --ok-bg:#e7f6ee; --ok-line:#a9dcc3;
+      --warn:#9a6400; --warn-fg:#6b4600; --warn-bg:#fdf3dc; --warn-bg2:#fdf7e8; --warn-line:#e6cd93;
+      --err:#c62828; --err-fg:#8d1f1f; --err-bg:#fdeced; --err-bg2:#fdf2f2;
+      --err-soft:#fdeced; --err-line:#f0b6b6;
+      --code-bg:#f7f8fb; --code-fg:#3d4453; --info:#0b6bb3;
+      --shadow:0 1px 2px rgba(16,24,40,.06);
+    }
+  }
+  :root[data-theme="light"]{
+    color-scheme:light;
+    --bg:#f4f6f9; --panel:#fff; --panel2:#f1f3f7; --line:#dce0e8;
+    --fg:#171a21; --muted:#5c6575; --faint:#78818f;
+    --accent:#2563eb; --on-accent:#fff; --accent-soft:#e6edfd; --accent-soft2:#eef3ff;
+    --ok:#0f7a4d; --ok-bg:#e7f6ee; --ok-line:#a9dcc3;
+    --warn:#9a6400; --warn-fg:#6b4600; --warn-bg:#fdf3dc; --warn-bg2:#fdf7e8; --warn-line:#e6cd93;
+    --err:#c62828; --err-fg:#8d1f1f; --err-bg:#fdeced; --err-bg2:#fdf2f2;
+    --err-soft:#fdeced; --err-line:#f0b6b6;
+    --code-bg:#f7f8fb; --code-fg:#3d4453; --info:#0b6bb3;
+    --shadow:0 1px 2px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{padding:14px 28px;border-bottom:1px solid var(--line);display:flex;
+         align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);
+         position:sticky;top:0;z-index:20}
+  header h1{font-size:17px;margin:0;font-weight:600}
+  #busy{margin-left:auto;font-size:13px;color:var(--muted)}
+  .btn.icon{padding:6px 11px;font-size:15px;line-height:1.2;min-width:38px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;
+       background:var(--muted);margin-right:7px;vertical-align:1px}
+  .dot.run{background:var(--accent);animation:pulse 1.2s infinite}
+  .dot.ok{background:var(--ok)} .dot.err{background:var(--err)}
+  @keyframes pulse{50%{opacity:.25}}
+
+  .wrap{max-width:1500px;margin:0 auto;padding:24px 28px 140px}
+  .hidden{display:none !important}
+
+  /* ---------- form toàn màn hình ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
+  fieldset{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0;
+           background:var(--panel)}
+  legend{padding:0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;
+         letter-spacing:.7px}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 5px}
+  label:first-of-type{margin-top:2px}
+  input[type=text],textarea,select{width:100%;background:var(--panel2);color:var(--fg);
+    border:1px solid var(--line);border-radius:7px;padding:9px 11px;
+    font-family:var(--mono);font-size:13px}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+  textarea{resize:vertical;min-height:110px;line-height:1.7}
+
+  .presets{display:grid;gap:8px}
+  .preset{background:var(--panel2);border:1px solid var(--line);color:var(--fg);
+    padding:10px 13px;border-radius:8px;cursor:pointer;font-size:13.5px;text-align:left;
+    font-family:inherit}
+  .preset:hover{border-color:var(--accent)}
+  .preset.on{border-color:var(--accent);background:var(--accent-soft)}
+  .preset small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+
+  .steps{display:grid;gap:8px}
+  .step{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);
+        border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer}
+  .step.on{border-color:var(--accent);background:var(--accent-soft)}
+  .step b i{font-style:normal}
+  .step.alt b::after{content:'rerun';margin-left:8px;font-size:10.5px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    border:1px solid var(--accent);border-radius:100px;padding:1px 7px;
+    vertical-align:1px;font-weight:600}
+  .step input{margin:3px 0 0;width:16px;height:16px;accent-color:var(--accent)}
+  .step b{font-weight:600;font-size:13.5px}
+  .step small{display:block;color:var(--muted);font-size:12px}
+
+  .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .seg button{flex:1;background:var(--panel2);border:0;color:var(--muted);
+    padding:9px;cursor:pointer;font-size:13px;font-family:inherit}
+  .seg button.on{background:var(--accent);color:var(--on-accent)}
+  .check{display:flex;gap:9px;align-items:center;margin-top:12px;cursor:pointer;
+         font-size:14px;color:var(--fg)}
+  .check input{width:16px;height:16px;accent-color:var(--accent)}
+
+  /* ---------- thanh xem trước dưới cùng ---------- */
+  #bar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);
+       border-top:1px solid var(--line);padding:12px 28px;z-index:15}
+  #bar .inner{max-width:1500px;margin:0 auto;display:flex;gap:18px;align-items:center}
+  #barinfo{flex:1;min-width:0}
+  .facts{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px}
+  .fact b{color:var(--muted);font-weight:500}
+  .fact span{font-family:var(--mono)}
+  #cmd{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:5px;
+       white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msg{margin-top:7px;padding:7px 10px;border-radius:6px;font-size:12.5px}
+  .msg.err{background:var(--err-bg);color:var(--err-fg);border:1px solid var(--err-line)}
+  .msg.warn{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-line)}
+  .btn{padding:12px 26px;border-radius:8px;border:1px solid var(--line);
+       background:var(--panel2);color:var(--fg);font-size:15px;font-weight:600;
+       cursor:pointer;font-family:inherit;white-space:nowrap}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .btn.danger{background:var(--err-bg);border-color:var(--err-line);color:var(--err)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* ---------- soát dữ liệu vào ---------- */
+  .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+  .ib{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel2)}
+  .ib.bad{border-color:var(--err);background:var(--err-bg)}
+  .ib.bad .n{color:var(--err)}
+  .ib .n{font-family:var(--mono);font-weight:600;font-size:13.5px}
+  .ib .f{color:var(--muted);font-family:var(--mono);font-size:12px;margin-top:3px;
+         word-break:break-all}
+
+  /* ---------- màn hình tiến độ ---------- */
+  #view-run h2{font-size:20px;margin:0 0 4px}
+  #runsub{color:var(--muted);font-size:13.5px;margin-bottom:22px;font-family:var(--mono)}
+  .plist{display:grid;gap:8px;max-width:900px}
+  .pi{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:9px;
+      border:1px solid var(--line);background:var(--panel)}
+  .pi .ico{width:22px;text-align:center;font-size:15px;flex:0 0 22px}
+  .pi .lb{flex:1;min-width:0}
+  .pi .lb b{font-weight:600;font-size:14.5px;display:block}
+  .pi .lb small{color:var(--muted);font-size:12.5px;font-family:var(--mono)}
+  .pi .bt{color:var(--muted);font-size:12.5px;font-family:var(--mono);flex:0 0 auto}
+  .pi.pending{opacity:.45}
+  .pi.running{border-color:var(--accent);background:var(--accent-soft2)}
+  .pi.running .ico{color:var(--accent)}
+  .pi.done .ico{color:var(--ok)}
+  .pi.skipped{opacity:.5}
+  .pi.skipped .ico{color:var(--muted)}
+  .pi.failed{border-color:var(--err);background:var(--err-soft)}
+  .pi.failed .ico{color:var(--err)}
+  .spin{display:inline-block;animation:spin 1.1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  #result{margin:24px 0;padding:16px 20px;border-radius:10px;font-size:15px;
+          font-weight:600;max-width:900px}
+  #result.ok{background:var(--ok-bg);border:1px solid var(--ok-line);color:var(--ok)}
+  #result.err{background:var(--err-bg);border:1px solid var(--err-line);color:var(--err)}
+  #result span{display:block;font-weight:400;font-size:13.5px;color:var(--muted);
+               margin-top:5px;font-family:var(--mono)}
+
+  #problems{max-width:900px;margin-top:22px}
+  #problems h3{font-size:13px;color:var(--warn);text-transform:uppercase;
+               letter-spacing:.6px;margin:0 0 9px}
+  #problems div{font-family:var(--mono);font-size:12.5px;color:var(--warn-fg);
+                padding:7px 11px;border-left:2px solid var(--warn);
+                background:var(--warn-bg2);border-radius:0 6px 6px 0;margin-bottom:5px;
+                white-space:pre-wrap;word-break:break-word}
+  #problems div.e{color:var(--err-fg);border-left-color:var(--err);background:var(--err-bg2)}
+
+  details{max-width:1100px;margin-top:26px}
+  summary{cursor:pointer;color:var(--muted);font-size:13px;padding:7px 0}
+  summary:hover{color:var(--fg)}
+  #log{margin-top:10px;max-height:420px;overflow-y:auto;padding:12px 16px;
+       font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--code-bg);
+       border:1px solid var(--line);border-radius:8px}
+  #log div{white-space:pre-wrap;word-break:break-word;color:var(--code-fg)}
+  #log .W{color:var(--warn)} #log .E{color:var(--err)} #log .C{color:var(--info)}
+
+  .runbtns{display:flex;gap:10px;margin-top:26px}
+
+  #active{margin:0 0 22px;max-width:900px}
+  #active h3{font-size:12px;color:var(--muted);text-transform:uppercase;
+             letter-spacing:.6px;margin:0 0 9px}
+  .ar{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;
+      border:1px solid var(--line);background:var(--panel);margin-bottom:6px}
+  .ar.me{border-color:var(--accent)}
+  .ar .who{font-weight:600;font-size:13.5px;min-width:120px}
+  .ar .what{flex:1;min-width:0;color:var(--muted);font-family:var(--mono);
+            font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ar .age{color:var(--muted);font-family:var(--mono);font-size:12px}
+  .ar button{background:var(--panel2);border:1px solid var(--line);color:var(--fg);
+             border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer;
+             font-family:inherit}
+  .ar button:hover{border-color:var(--accent)}
+  .ar button.stop:hover{border-color:var(--err);color:var(--err)}
+</style>
+<script>
+  // Chạy ngay trong <head>: nếu đợi script cuối trang thì người dùng nền sáng
+  // sẽ thấy trang loé đen một nhịp trước khi đổi.
+  try {
+    var t = localStorage.getItem('mtdna-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header>
+  <h1>mtDNA Pipeline</h1>
+  <span id="busy"><span class="dot" id="dot"></span><span id="busytext">chưa chạy</span></span>
+  <button class="btn icon" id="btntheme" type="button" aria-label="Đổi nền sáng/tối">☾</button>
+  <button class="btn" id="btnruns" style="padding:6px 14px;font-size:13px">Các lượt đang chạy</button>
+</header>
+
+<!-- ===================== FORM ===================== -->
+<div class="wrap" id="view-form">
+  <div class="grid">
+    <fieldset>
+      <legend>Quy trình</legend>
+      <div class="presets" id="presets"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Các bước chạy</legend>
+      <div class="steps" id="steps"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Batch</legend>
+      <label>Mã batch — mỗi dòng một mã</label>
+      <textarea id="batches" placeholder="MS_110826_015&#10;MS_110826_016" spellcheck="false"></textarea>
+      <div class="inputs" id="inputs" style="margin-top:12px"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Cấu hình</legend>
+      <label>Người chạy — để biết lượt nào của ai</label>
+      <!-- datalist chứ không phải select: vừa chọn được trong danh sách, vừa gõ
+           tên khác vào được, mà JS đọc .value y như một input thường. -->
+      <input type="text" id="owner" list="people" placeholder="chọn hoặc gõ tên"
+             spellcheck="false" maxlength="40" autocomplete="off">
+      <datalist id="people">
+        <option value="Đào Thế Hùng">
+        <option value="Lê Thị Minh Anh">
+        <option value="Lê Thu Giang">
+        <option value="Ms. Nguyễn Ngọc Nam">
+        <option value="Nguyễn Kim Thủy">
+        <option value="Nguyễn Lưu Thanh Xuân">
+        <option value="Nguyễn Mạnh Kiên">
+        <option value="Nguyễn Thị Bảo Châu">
+        <option value="Nguyễn Thị Phương">
+        <option value="Phan Thu Quyên">
+        <option value="Phùng Thùy Linh">
+        <option value="Trần Nhật Tân">
+        <option value="Trần Quang Minh">
+      </datalist>
+
+      <label>Engine phân tích</label>
+      <div class="seg" id="pipeline">
+        <button data-v="tracy">tracy</button>
+        <button data-v="blastn">blastn</button>
+      </div>
+
+      <label class="check"><input type="checkbox" id="rerun"> Chế độ rerun (chọn mẫu từ ZIP)</label>
+
+      <label>Thư mục Sequencher (nguồn ZIP)</label>
+      <input type="text" id="sequencher_dir" spellcheck="false">
+      <select id="rerun_dirs" style="margin-top:7px;display:none"></select>
+
+      <label>Thư mục kết quả</label>
+      <input type="text" id="results_dir" spellcheck="false">
+
+      <label>Số batch chạy cùng lúc — 0 là tự đếm theo số batch nhập</label>
+      <input type="number" id="jobs" min="0" max="32" step="1" value="0">
+
+      <label>Ghi vào sheet nào</label>
+      <select id="sheet"></select>
+
+      <label>Upload Google Sheet</label>
+      <div class="seg" id="upload">
+        <button data-v="auto">Tự động</button>
+        <button data-v="on">Bật</button>
+        <button data-v="off">Tắt</button>
+      </div>
+    </fieldset>
+  </div>
+</div>
+
+<div id="bar">
+  <div class="inner">
+    <div id="barinfo">
+      <div class="facts" id="facts"></div>
+      <div id="cmd"></div>
+      <div id="msg"></div>
+    </div>
+    <button class="btn primary" id="btnrun">Chạy</button>
+  </div>
+</div>
+
+<!-- ===================== TIẾN ĐỘ ===================== -->
+<div class="wrap hidden" id="view-run">
+  <div id="active" class="hidden"></div>
+  <h2 id="runtitle">Đang chạy</h2>
+  <div id="runsub"></div>
+  <div id="result" class="hidden"></div>
+  <div class="plist" id="plist"></div>
+  <div id="problems" class="hidden"></div>
+
+  <details>
+    <summary>Xem log chi tiết</summary>
+    <div id="log"></div>
+  </details>
+
+  <div class="runbtns">
+    <button class="btn danger" id="btnstop">Dừng</button>
+    <button class="btn" id="btnback">Về form</button>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let CONFIG = null, STATE = {steps:new Set(), pipeline:'tracy', upload:'auto'};
+let ES = null, LINES = [], RUNID = null, PREVIEW_OK = false;
+let VIEW = 'form';   // form | run | list
+
+const ICON = {pending:'○', running:'◐', done:'✓', skipped:'—', failed:'✕'};
+
+// Bước 2 mang cùng số nhưng làm hai việc khác hẳn nhau. Rerun không gom AB1 từ
+// đầu -- nó thay read lab vừa giải trình tự lại vào đúng vùng bị hỏng.
+const RERUN_STEP = {
+  '2': {label: 'Thay read lab đã chạy lại',
+        desc: 'Đưa read lab giải trình tự lại vào, thay đúng vùng đã hỏng'},
+};
+function paintSteps(){
+  const rerun = $('rerun').checked;
+  document.querySelectorAll('#steps .step').forEach(el => {
+    const s = CONFIG.steps.find(x => x.id === el.dataset.id);
+    const o = (rerun && RERUN_STEP[s.id]) || s;
+    el.querySelector('.lb').textContent = o.label;
+    el.querySelector('.dc').textContent = o.desc;
+    el.classList.toggle('alt', rerun && !!RERUN_STEP[s.id]);
+  });
+}
+
+// ============ nền sáng / tối ============
+// Ba trạng thái: chưa chọn thì theo hệ điều hành, chọn rồi thì nhớ trong máy.
+function darkNow(){
+  const t = document.documentElement.getAttribute('data-theme');
+  if(t) return t === 'dark';
+  return matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function paintThemeBtn(){
+  const b = $('btntheme'); if(!b) return;
+  const dark = darkNow();
+  b.textContent = dark ? '☀' : '☾';
+  b.title = dark ? 'Chuyển sang nền sáng' : 'Chuyển sang nền tối';
+}
+function initTheme(){
+  paintThemeBtn();
+  // Chưa chọn tay thì vẫn bám theo hệ điều hành khi nó đổi.
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if(!document.documentElement.hasAttribute('data-theme')) paintThemeBtn();
+  });
+  $('btntheme').onclick = () => {
+    const next = darkNow() ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('mtdna-theme', next); } catch(e) {}
+    paintThemeBtn();
+  };
+}
+
+// ============ khởi tạo ============
+async function boot(){
+  CONFIG = await (await fetch('/api/config')).json();
+
+  $('presets').innerHTML = CONFIG.presets.map(p =>
+    `<button class="preset" data-id="${p.id}">${esc(p.label)}<small>${esc(p.desc)}</small></button>`).join('');
+  $('presets').onclick = e => {
+    const b = e.target.closest('.preset'); if(!b) return;
+    applyPreset(CONFIG.presets.find(p => p.id === b.dataset.id));
+    document.querySelectorAll('.preset').forEach(x => x.classList.toggle('on', x === b));
+  };
+
+  $('steps').innerHTML = CONFIG.steps.map(s =>
+    `<label class="step" data-id="${s.id}"><input type="checkbox" value="${s.id}">
+      <span><b>${s.id}. <i class="lb"></i></b><small class="dc"></small></span></label>`).join('');
+  paintSteps();
+  $('steps').onchange = () => {
+    STATE.steps = new Set([...document.querySelectorAll('#steps input:checked')].map(i => i.value));
+    document.querySelectorAll('.step').forEach(l =>
+      l.classList.toggle('on', l.querySelector('input').checked));
+    preview();
+  };
+
+  // Chỉ tên sheet. ID nằm trong .env và không hiện ở đâu trên trang.
+  $('sheet').innerHTML =
+    '<option value="">— không dùng sheet —</option>' +
+    CONFIG.sheets.map(x => `<option value="${x.key}">${esc(x.label)}</option>`).join('');
+  $('sheet').onchange = preview;
+
+  segment('pipeline', v => { STATE.pipeline = v; preview(); });
+  segment('upload',   v => { STATE.upload = v; preview(); });
+
+  if(CONFIG.rerun_dirs.length){
+    $('rerun_dirs').innerHTML = '<option value="">— chọn nhanh thư mục rerun —</option>' +
+      CONFIG.rerun_dirs.map(d => `<option value="${esc(d)}">${esc(d.split('/').pop())}</option>`).join('');
+    $('rerun_dirs').onchange = e => { if(e.target.value){ $('sequencher_dir').value = e.target.value; preview(); } };
+  }
+  $('rerun').onchange = e => {
+    $('rerun_dirs').style.display = e.target.checked && CONFIG.rerun_dirs.length ? 'block' : 'none';
+    paintSteps();   // bước 2 đổi nghĩa theo chế độ
+    preview();
+  };
+
+  ['batches','sequencher_dir','results_dir','jobs'].forEach(id => $(id).oninput = debounce(preview, 400));
+
+  // Tên người chạy nhớ lại trong trình duyệt, khỏi gõ mỗi lần.
+  try { $('owner').value = localStorage.getItem('mtdna-owner') || ''; } catch(e) {}
+  $('owner').oninput = () => { try { localStorage.setItem('mtdna-owner', $('owner').value); } catch(e) {} };
+  $('btnruns').onclick = () => { showRun(null); refreshStatus(); };
+  $('btnrun').onclick = run;
+  $('btnstop').onclick = () => stopRun(RUNID);
+  $('btnback').onclick = () => showForm();
+
+  applyPreset(CONFIG.presets[0]);
+  document.querySelector('.preset').classList.add('on');
+  await refreshStatus(true);
+}
+
+function segment(id, cb){
+  $(id).onclick = e => {
+    const b = e.target.closest('button'); if(!b) return;
+    [...$(id).children].forEach(x => x.classList.toggle('on', x === b));
+    cb(b.dataset.v);
+  };
+}
+function setSegment(id, v){ [...$(id).children].forEach(x => x.classList.toggle('on', x.dataset.v === v)); }
+function debounce(fn, ms){ let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+function esc(s){ return String(s === undefined || s === null ? '' : s)
+  .replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function applyPreset(p){
+  if(!p) return;
+  STATE.steps = new Set(p.steps);
+  document.querySelectorAll('#steps input').forEach(i => { i.checked = p.steps.includes(i.value); });
+  document.querySelectorAll('.step').forEach(l => l.classList.toggle('on', p.steps.includes(l.dataset.id)));
+  STATE.pipeline = p.pipeline; setSegment('pipeline', p.pipeline);
+  STATE.upload = p.upload === true ? 'on' : (p.upload === false ? 'off' : 'auto');
+  setSegment('upload', STATE.upload);
+  $('rerun').checked = !!p.rerun;
+  $('rerun_dirs').style.display = p.rerun && CONFIG.rerun_dirs.length ? 'block' : 'none';
+  $('sequencher_dir').value = p.sequencher_dir || '';
+  $('results_dir').value = p.results_dir || '';
+  $('sheet').value = p.sheet || '';
+  $('jobs').value = p.jobs === undefined ? 0 : p.jobs;
+  paintSteps();
+  preview();
+}
+
+function payload(){
+  return {
+    steps: [...STATE.steps].sort(),
+    pipeline: STATE.pipeline,
+    batches: $('batches').value,
+    rerun: $('rerun').checked,
+    sequencher_dir: $('sequencher_dir').value.trim(),
+    results_dir: $('results_dir').value.trim(),
+    owner: $('owner').value.trim(),
+    sheet: $('sheet').value,
+    jobs: parseInt($('jobs').value, 10) || 0,
+    upload: STATE.upload === 'auto' ? null : STATE.upload === 'on'
+  };
+}
+
+// ============ xem trước ============
+async function preview(){
+  const r = await fetch('/api/preview', {method:'POST', headers:{'Content-Type':'application/json'},
+                                         body: JSON.stringify(payload())});
+  const d = await r.json();
+  if(!r.ok){
+    PREVIEW_OK = false;
+    $('facts').innerHTML = ''; $('cmd').textContent = ''; $('inputs').innerHTML = '';
+    $('msg').innerHTML = `<div class="msg err">${esc(d.error)}</div>`;
+    $('btnrun').disabled = true;
+    return;
+  }
+  PREVIEW_OK = true;
+  $('btnrun').disabled = false;
+  $('cmd').textContent = d.cmd_display;
+  const e = d.effective;
+  $('facts').innerHTML = [
+    ['Sequencher', e.sequencher_dir], ['Kết quả', e.results_dir],
+    ['Sheet', e.upload ? e.sheet_label : 'không upload'],
+    ['Chạy cùng lúc', e.jobs > 1 ? e.jobs + ' batch' : 'lần lượt']
+  ].map(([k, v]) => `<div class="fact"><b>${k}:</b> <span>${esc(v)}</span></div>`).join('');
+
+  const warn = [], block = [];
+  $('inputs').innerHTML = d.inputs.map(b => {
+    b.warnings.forEach(w => warn.push(b.batch + ': ' + w));
+    (b.blockers || []).forEach(w => block.push(b.batch + ': ' + w));
+    const zip = b.zips.length
+      ? b.zips.map(z => `<div class="f">zip · ${esc(z.split('/').pop())}</div>`).join('')
+      : '<div class="f">zip · (không có)</div>';
+    const ab1 = b.ab1_count ? `<div class="f">ab1 · ${b.ab1_count} file</div>` : '';
+    const bad = (b.blockers || []).length ? ' bad' : '';
+    return `<div class="ib${bad}"><div class="n">${esc(b.batch)}</div>${zip}${ab1}</div>`;
+  }).join('');
+  $('msg').innerHTML =
+    (block.length ? `<div class="msg err">${block.map(esc).join('<br>')}</div>` : '') +
+    (warn.length ? `<div class="msg warn">${warn.map(esc).join('<br>')}</div>` : '');
+}
+
+// ============ chạy ============
+async function run(){
+  if(!PREVIEW_OK) return;
+  $('btnrun').disabled = true;
+  const r = await fetch('/api/run', {method:'POST', headers:{'Content-Type':'application/json'},
+                                     body: JSON.stringify(payload())});
+  const d = await r.json();
+  if(!r.ok){
+    $('msg').innerHTML = `<div class="msg err">${esc(d.error)}</div>`;
+    $('btnrun').disabled = false;
+    return;
+  }
+  LINES = []; $('log').innerHTML = '';
+  showRun(d.run);
+  renderProgress(d.run.progress);
+  setHeader(d.run); setRunDetail(d.run);
+  attach(d.run.id);
+}
+
+function showRun(run){
+  VIEW = run ? 'run' : 'list';
+  $('view-form').classList.add('hidden');
+  $('bar').classList.add('hidden');
+  $('view-run').classList.remove('hidden');
+  $('result').className = 'hidden';
+  $('runsub').textContent = run ? run.cmd_display : '';
+  if(!run){
+    $('runtitle').textContent = 'Các lượt đang chạy';
+    $('plist').innerHTML = '';
+    $('log').innerHTML = '';
+    $('problems').classList.add('hidden');
+    $('btnstop').disabled = true;
+  }
+  window.scrollTo(0, 0);
+}
+
+async function stopRun(id){
+  if(!id) return;
+  const r = ALL_ACTIVE.find(x => x.id === id);
+  const who = r && r.owner ? ' của ' + r.owner : '';
+  const what = r ? r.batches.join(', ') : id;
+  if(!confirm('Dừng lượt' + who + ' — ' + what + '?\n\nBatch đang chạy dở sẽ bị bỏ giữa chừng.')) return;
+  await fetch('/api/stop', {method:'POST', headers:{'Content-Type':'application/json'},
+                            body: JSON.stringify({id})});
+  refreshStatus();
+}
+
+// Xem một lượt khác đang chạy.
+async function viewRun(id){
+  const log = await (await fetch('/api/log?id=' + encodeURIComponent(id))).json();
+  LINES = log.lines || [];
+  $('log').innerHTML = ''; LINES.forEach(appendLog);
+  showRun(log.run);
+  renderProgress(log.run.progress);
+  setHeader(log.run); setRunDetail(log.run);
+  attach(id);
+}
+
+let ALL_ACTIVE = [];
+function renderActive(active){
+  ALL_ACTIVE = active;
+  const box = $('active');
+  const others = active.length;
+  $('btnruns').textContent = others ? others + ' lượt đang chạy' : 'Các lượt đang chạy';
+  if(!others){
+    if(VIEW === 'list'){
+      box.classList.remove('hidden');
+      box.innerHTML = '<h3>Đang chạy</h3><div class="ar">'
+        + '<div class="what">Không có lượt nào đang chạy.</div></div>';
+    } else {
+      box.classList.add('hidden'); box.innerHTML = '';
+    }
+    return;
+  }
+  box.classList.remove('hidden');
+  const now = Date.now() / 1000;
+  box.innerHTML = '<h3>Đang chạy</h3>' + active.map(r => {
+    const mine = r.id === RUNID ? ' me' : '';
+    const age = Math.round(now - r.started_at);
+    const t = age < 60 ? age + 's' : Math.floor(age / 60) + 'm' + (age % 60) + 's';
+    return `<div class="ar${mine}">
+      <div class="who">${esc(r.owner || '(không tên)')}</div>
+      <div class="what">${esc(r.batches.join(', '))}</div>
+      <div class="age">${t}</div>
+      <button onclick="viewRun('${r.id}')">Xem</button>
+      <button class="stop" onclick="stopRun('${r.id}')">Dừng</button>
+    </div>`;
+  }).join('');
+}
+function showForm(){
+  VIEW = 'form';
+  $('view-run').classList.add('hidden');
+  $('view-form').classList.remove('hidden');
+  $('bar').classList.remove('hidden');
+}
+
+function attach(id){
+  RUNID = id;
+  if(ES){ ES.close(); ES = null; }
+  ES = new EventSource('/api/stream?id=' + encodeURIComponent(id) + '&from=' + LINES.length);
+  ES.onmessage = ev => {
+    const d = JSON.parse(ev.data);
+    if(d.progress) renderProgress(d.progress);
+    if(d.line !== undefined){
+      LINES.push(d.line);
+      appendLog(d.line);
+      if(d.line.startsWith('__END__')){ ES.close(); ES = null; refreshStatus(); }
+    }
+  };
+  ES.onerror = async () => {
+    if(ES){ ES.close(); ES = null; }
+    const s = await (await fetch('/api/status')).json();
+    setHeader((s.active || []).find(r => r.id === RUNID) || null);
+    if(s.current && s.current.id === RUNID && s.current.status === 'running'){
+      setTimeout(() => { if(!ES) attach(RUNID); }, 2000);
+    }
+  };
+}
+
+// ============ bảng tiến độ ============
+function renderProgress(p){
+  if(!p) return;
+  $('plist').innerHTML = p.items.map(i => {
+    const ico = i.status === 'running'
+      ? `<span class="spin">${ICON.running}</span>` : ICON[i.status];
+    const detail = i.detail ? `<small>${esc(i.detail)}</small>` : '';
+    return `<div class="pi ${i.status}">
+      <div class="ico">${ico}</div>
+      <div class="lb"><b>${esc(i.label)}</b>${detail}</div>
+      <div class="bt">${esc(i.batch)}</div>
+    </div>`;
+  }).join('');
+
+  if(p.problems && p.problems.length){
+    $('problems').classList.remove('hidden');
+    $('problems').innerHTML = '<h3>Cảnh báo và lỗi</h3>' + p.problems.map(t =>
+      `<div class="${/ERROR|CRITICAL|Traceback/.test(t) ? 'e' : ''}">${esc(trim(t))}</div>`).join('');
+  } else {
+    $('problems').classList.add('hidden');
+  }
+}
+
+// Bỏ phần dấu thời gian và tên module của loguru, giữ lại nội dung.
+function trim(line){
+  const m = line.match(/\|\s*[A-Z]+\s*\|[^-]*-\s*(.*)$/);
+  return m ? m[1] : line;
+}
+
+function appendLog(line){
+  const cls = /\|\s*(ERROR|CRITICAL)\s*\|/.test(line) ? 'E'
+            : /\|\s*WARNING\s*\|/.test(line) ? 'W'
+            : line.startsWith('$ ') ? 'C' : '';
+  const near = $('log').scrollHeight - $('log').scrollTop - $('log').clientHeight < 40;
+  $('log').insertAdjacentHTML('beforeend', `<div class="${cls}">${esc(line)}</div>`);
+  if(near) $('log').scrollTop = $('log').scrollHeight;
+}
+
+// ============ trạng thái ============
+// Chấm trạng thái trên header — nói về lượt đang được chú ý, không về màn hình.
+function setHeader(run){
+  const dot = $('dot'), txt = $('busytext');
+  if(!run){ dot.className = 'dot'; txt.textContent = 'chưa chạy'; return; }
+  const running = run.status === 'running';
+  dot.className = 'dot ' + (running ? 'run' : (run.status === 'success' ? 'ok' : 'err'));
+  txt.textContent = ({running:'đang chạy', success:'xong', failed:'lỗi', stopped:'đã dừng'})[run.status]
+                    + ' · ' + run.started_display;
+}
+
+// Phần chi tiết của một lượt. Chỉ gọi khi đang thật sự xem lượt đó, nếu không
+// thì nhịp làm mới 5 giây sẽ ghi đè màn hình danh sách bằng lượt của người khác.
+function setRunDetail(run){
+  $('btnrun').disabled = !PREVIEW_OK;
+  if(!run){
+    $('btnstop').disabled = true;
+    $('result').className = 'hidden';
+    return;
+  }
+  const running = run.status === 'running';
+  $('btnstop').disabled = !running;
+  $('runtitle').textContent = running ? 'Đang chạy' : 'Đã kết thúc';
+
+  if(!running && run.finished_at){
+    const secs = Math.round(run.finished_at - run.started_at);
+    const ok = run.status === 'success';
+    const label = {success:'Hoàn tất', failed:'Thất bại', stopped:'Đã dừng giữa chừng'}[run.status];
+    $('result').className = ok ? 'ok' : 'err';
+    $('result').innerHTML = `${label}<span>${secs} giây · mã thoát ${run.returncode}`
+      + (ok ? '' : ' · mở "Xem log chi tiết" để biết nguyên nhân') + `</span>`;
+  } else {
+    $('result').className = 'hidden';
+  }
+}
+
+async function refreshStatus(initial){
+  const d = await (await fetch('/api/status')).json();
+  renderActive(d.active || []);
+  const mine = (d.active || []).find(r => r.id === RUNID)
+            || (d.recent || []).find(r => r.id === RUNID);
+  setHeader(mine || (RUNID ? null : (d.active || [])[0] || null));
+  if(VIEW === 'run') setRunDetail(mine || null);
+
+  // Tải lại trang giữa chừng: bám vào lượt đang chạy nếu chỉ có một,
+  // còn nhiều thì hiện danh sách để chọn.
+  if(initial && (d.active || []).length === 1) await viewRun(d.active[0].id);
+  else if(initial && (d.active || []).length > 1) showRun(null);
+}
+
+initTheme();
+boot();
+setInterval(() => { if(!ES) refreshStatus(); }, 5000);
+</script>
+</body>
+</html>

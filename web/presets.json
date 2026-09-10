@@ -1,0 +1,125 @@
+{
+  "_comment": "Cấu hình các quy trình chuẩn (SOP). Sửa file này rồi tải lại trang là có hiệu lực, không cần khởi động lại server. Trường \"sheet\" trỏ tới tên sheet khai trong .env (main/training/rerun), không phải ID. Trường \"jobs\" là số batch chạy cùng lúc, 0 = tự đếm theo số batch nhập vào.",
+  "port": 8765,
+  "steps": [
+    {
+      "id": "1",
+      "name": "validate",
+      "label": "Validate",
+      "desc": "Kiểm tra Positive Control"
+    },
+    {
+      "id": "2",
+      "name": "prepare",
+      "label": "Prepare",
+      "desc": "Gom file AB1 + trích danh sách mẫu"
+    },
+    {
+      "id": "3",
+      "name": "automate",
+      "label": "Automate",
+      "desc": "Chạy engine phân tích (tracy/blastn)"
+    },
+    {
+      "id": "4",
+      "name": "manual",
+      "label": "Manual",
+      "desc": "Đọc kết quả manual + so sánh Sequencher"
+    },
+    {
+      "id": "5",
+      "name": "fasta",
+      "label": "FASTA",
+      "desc": "Xuất file FASTA"
+    },
+    {
+      "id": "6",
+      "name": "report",
+      "label": "Report",
+      "desc": "Sinh báo cáo PDF"
+    }
+  ],
+  "presets": [
+    {
+      "id": "automate",
+      "label": "1. Automate + compare",
+      "desc": "Quy trình thường quy: chạy máy rồi so với manual, có upload Google Sheet.",
+      "steps": [
+        "2",
+        "3",
+        "4"
+      ],
+      "pipeline": "tracy",
+      "rerun": false,
+      "sequencher_dir": "/mnt/nas/bca/mtDNA/Sequencher_temp",
+      "results_dir": "/mnt/nas/bca/mtDNA/science/results",
+      "upload": true,
+      "sheet": "main",
+      "jobs": 0
+    },
+    {
+      "id": "compare",
+      "label": "1b. Compare lại",
+      "desc": "Manual đã sửa kết quả — chỉ chạy lại bước so sánh.",
+      "steps": [
+        "4"
+      ],
+      "pipeline": "tracy",
+      "rerun": false,
+      "sequencher_dir": "/mnt/nas/bca/mtDNA/Sequencher_temp",
+      "results_dir": "/mnt/nas/bca/mtDNA/science/results",
+      "upload": true,
+      "sheet": "main",
+      "jobs": 0
+    },
+    {
+      "id": "fasta",
+      "label": "2. Xuất FASTA",
+      "desc": "Chỉ sinh FASTA. Không upload sheet.",
+      "steps": [
+        "5"
+      ],
+      "pipeline": "tracy",
+      "rerun": false,
+      "sequencher_dir": "/mnt/nas/bca/mtDNA/Sequencher",
+      "results_dir": "/mnt/nas/bca/mtDNA/science/results",
+      "upload": false,
+      "sheet": "",
+      "jobs": 0
+    },
+    {
+      "id": "rerun",
+      "label": "3. Rerun",
+      "desc": "Chạy lại mẫu lỗi từ ZIP rerun. Bước 2 thay read lab đã giải trình tự lại. Ghi ra ổ cá nhân và sheet rerun.",
+      "steps": [
+        "2",
+        "3",
+        "4"
+      ],
+      "pipeline": "blastn",
+      "rerun": true,
+      "sequencher_dir": "/mnt/nas/bca/mtDNA/Sequencher_temp/rerun",
+      "results_dir": "/home/minhtq/rerun_results",
+      "upload": true,
+      "sheet": "rerun",
+      "jobs": 0
+    },
+    {
+      "id": "training",
+      "label": "4. Training",
+      "desc": "Chạy trên dữ liệu training, ghi vào thư mục training và sheet training.",
+      "steps": [
+        "2",
+        "3",
+        "4"
+      ],
+      "pipeline": "tracy",
+      "rerun": false,
+      "sequencher_dir": "/mnt/nas/bca/mtDNA/Sequencher_training",
+      "results_dir": "/mnt/nas/bca/mtDNA/science/results/training",
+      "upload": true,
+      "sheet": "training",
+      "jobs": 0
+    }
+  ]
+}

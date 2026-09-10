@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<ugene-plugin id="dna_stat" version="50.0" ugene-version="50.0" qt-version="5.15.6"    >
+    <name>Sequence and alignment related statistics</name>
+    <plugin-vendor>Unipro</plugin-vendor>
+    <plugin-mode>ui</plugin-mode>
+    <library>libdna_stat.so</library>
+    <platform name="unix" arch="64"/>
+</ugene-plugin>

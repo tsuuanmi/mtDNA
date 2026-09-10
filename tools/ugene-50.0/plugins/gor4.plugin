@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<ugene-plugin id="gor4" version="50.0" ugene-version="50.0" qt-version="5.15.6"    >
+    <name>GOR4</name>
+    <plugin-vendor>Unipro</plugin-vendor>
+    <plugin-mode>console,ui</plugin-mode>
+    <library>libgor4.so</library>
+    <platform name="unix" arch="64"/>
+</ugene-plugin>

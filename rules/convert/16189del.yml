@@ -1,0 +1,11 @@
+MustHave:
+  - 16189T-
+MustNotHave:
+  - 16182.1-C
+Condition:
+Change:
+  Remove:
+  - 16189T-
+  Add:
+  - 16189TC 
+  - 16193C-

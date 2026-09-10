@@ -1,0 +1,12 @@
+MustHave:
+  - 316GC
+  - 316.1-A
+MustNotHave:
+Condition:
+Change:
+  Remove:
+  - 316GC
+  - 316.1-A
+  Add:
+  - 316GA
+  - 315.1-C

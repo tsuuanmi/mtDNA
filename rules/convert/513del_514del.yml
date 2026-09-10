@@ -1,0 +1,13 @@
+MustHave:
+  - 513G-
+  - 514C-
+MustNotHave:
+Condition:
+Change:
+  Remove:
+  - 513G-
+  - 514C-
+  Add:
+  - 513GA
+  - 523A-
+  - 524C-

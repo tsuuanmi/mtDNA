@@ -1,0 +1,540 @@
+Batch mtDNA	Sequence Released Date	No. of Samples	Analysis Code	Batch mtDNA-Analysis Code	Analyst(s)	Batch Receive Time	No. of Samples Analysed by Sequencher	Sequencher Analysis Transfer Time	1st Review	Review Finish	2nd Review	No. of Samples Passed by Sequencher Analysis (1st run)	No. of Samples Passed by Sequencher Analysis (rerun)	No. of Samples Passed by Sequencher Analysis Transfered to Next Stage	Sequencher Analysis Results from Lab to Sciences Date	Sequencher Analysis (Batches)	Analyst(s).1	Sequencher vs Pipeline Comparison	Regenerated Reports by the Science Team	Regenerated Reports Realeased Date	Numbers of Reports Released	Reports Check by Nam	Final Reports	Note1	Done	Run1 Analysis Results Released Date	Rerun Analysis Results Released Date	Note1.1	Note 2	Note 2.1	Unnamed: 31
+mtDNA_20	2025-03-19	91			-	-	91.0	-	-	-	-	91.0	-	91.0	250321	Done	N (Ms)		Released	250321	91	Done	91.0		DONE			Tiền Giang			
+mtDNA_21	2025-03-29	92			-	-	92.0	-	-	-	-	88.0	4	88.0	250401		N (Ms)		Released	250402	88	Done	88.0	4 mẫu lab chạy lại từ PCR	DONE	2025-07-10		Nghệ An - Hà Tĩnh			
+mtDNA_22	2025-04-02	92			-	-	92.0	-	-	-	-	86.0	4	86.0	250404		N (Ms)		Released	250404	86	Done	86.0	4 mẫu lab chạy lại PCR-bigdye 3F, 2 mẫu chạy lại từ tách chiết	DONE	2025-07-10		Nghệ An - Hà Tĩnh (2 mẫu đã chạy xác minh, trả ở batch 28)			
+mtDNA_23	2025-04-04	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250408	Done	N (Ms)		Released	250408	92	Done	92.0		DONE			Nghệ An - Hà Tĩnh			
+mtDNA_24	2025-04-08	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250410	Done	N (Ms)		Released	250410	92	Done	92.0		DONE			Nghệ An - Hà Tĩnh			
+mtDNA_25	2025-04-09	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250411	Done	N (Ms)		Released	250416	92	Done	92.0		DONE			Nghệ An - Hà Tĩnh			
+mtDNA_26	2025-04-11	92			-	-	92.0	-	-	-	-	91.0	1	91.0	250418		N (Ms)		Released	250421	91	Done	91.0	253034: yc chạy BS HV3F	DONE	2025-07-10		Nghệ An - Hà Tĩnh			
+mtDNA_27	2025-04-10	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250416	Done	N (Ms)		Released	250421	92	Done	92.0		DONE			Nghệ An - Hà Tĩnh			
+mtDNA_28	2025-04-16	92			-	-	92.0	-	-	-	-	84.0	8	84.0	250425		T, Q, N (Ms)		Released	250428	84	Done	84.0	2 mẫu 252251, 252278 (mt22, nhóm mẫu Nghệ An - Hà Tĩnh) đã được chạy lại từ tách chiết và xác nhận đúng KQ. 8 mẫu yc chạy BS	DONE	2025-06-20		Hà Nam + 2 Nghệ An - Hà Tĩnh			
+mtDNA_29	2025-04-17	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250421	Done	N (Ms)		Released	250421	92	Done	92.0	lưu ý 253888 có del ở 16166. 4 mẫu yc chạy BS	DONE			Hà Nam (1 mẫu thuộc ca Đức Cơ)			
+mtDNA_30	2025-02-17	92			-	-	92.0	-	-	-	-	88.0	4	88.0	250424		T, N (Ms)		Released	250428	88	Done	88.0	4 mẫu chạy BS	DONE	2025-06-20		Hà Nam (1 mẫu thuộc ca Đức Cơ)			
+mtDNA_31	2025-04-21	92			-	-	92.0	-	-	-	-	89.0	3	89.0	250428		N (Ms)		Released	250428	89	Done	89.0	3 mẫu chạy BS	DONE	2025-06-20		Hà Nam			
+mtDNA_32	2025-04-23	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250428	Done	T, N (Ms)		Released	250428	92	Done	92.0		DONE			Hà Nam			
+mtDNA_33	2025-04-24	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250505	Done	Q, N (Ms)		Released	250505	92	Done	92.0		DONE			Hà Nam			
+mtDNA_34	2025-04-26	92			-	-	92.0	-	-	-	-	90.0	2	90.0	250429		T, N (Ms)		Released	250429	90	Done	90.0	2 mẫu chạy BS	DONE	2025-06-20		Hà Nam			
+mtDNA_35	2025-04-26	92			-	-	92.0	-	-	-	-	92.0	-	92.0	250505	Done	T, N (Ms)		Released	250506	92	Done	92.0		DONE			Hà Nam			
+mtDNA_36	2025-04-27	92			-	-	92.0	-	-	-	-	89.0	3	89.0	250505		T, N (Ms)		Released	250505	89	Done	89.0	3 mẫu chạy BS	DONE	2025-06-20		Hà Nam			
+mtDNA_37	2025-04-28	90			-	-	90.0	-	-	-	-	87.0	3	87.0	250505		N (Ms)		Released	250506	87	Done	87.0		DONE	2025-06-20		Hà Nam			
+mtDNA_38	2025-04-29	92			-	-	92.0	-	-	-	-	91.0	1	91.0	250505		T, N (Ms)		Released	250506	91	Done	91.0	1 mẫu chạy BS	DONE	2025-06-20		Hà Nam			
+mtDNA_40	2025-05-06	91			-	-	91.0	-	-	-	-	89.0	1	89.0	250507				Released	250508	89	Done	89.0	1 mẫu tách lại, 1 mẫu chạy BS	DONE	2025-06-20		Hà Nam (lặp 1 mẫu chạy lại từ bước tách, trả KQ ở batch mt52)			
+mtDNA_39	2025-05-08	92			-	-	92.0	-	-	-	-	91.0	0	91.0	250509				Released	250509	91	Done	91.0	1 mẫu tách lại	DONE			Hà Nam (lặp 1 mẫu chạy lại từ bước tách, trả KQ ở batch mt52)			
+mtDNA_41	2025-05-08	92			-	-	92.0	-	-	-	-	88.0	4	88.0	250509				Released	250512	88	Done	88.0	4 mẫu chạy lại	DONE	2025-06-20		Hà Nam			
+mtDNA_42	2025-05-09	92			-	-	92.0	-	-	-	-	91.0	1	91.0	250512				Released	250513	91	Done	91.0		DONE	2025-06-20		Hà Nam			
+mtDNA_43	2025-05-10	92			-	-	92.0	-	-	-	-	90.0	2	90.0	250518					2025-05-19 00:00:00	90				DONE			Hà Nam			
+mtDNA_44	2025-05-11	92			-	-	92.0	-	-	-	-	89.0	3	89.0	250513				Released	250516	89				DONE	2025-06-20		Hà Nam			
+mtDNA_45	2025-05-12	92			-	-	92.0	-	-	-	-	86.0	6	86.0	250515				Released	250516	86				DONE	2025-06-20		Hà Nam			
+mtDNA_46	2025-05-13	92			-	-	92.0	-	-	-	-	89.0	3	89.0	250515				Released	250516	89				DONE	2025-05-15	2025-07-06	Hà Nam			
+mtDNA_47	2025-05-14	92			-	-	92.0	-	-	-	-	84.0	8	84.0	250517					2025-05-19 00:00:00	84				DONE			Hà Nam			
+mtDNA_48	2025-05-16	92			-	-	92.0	-	-	-	-	86.0	6	86.0	250518					2025-05-19 00:00:00	86				DONE			Hà Nam			
+mtDNA_49	2025-05-19	92			-	-	92.0	-	-	-	-	90.0	2	90.0	2025-05-20 00:00:00										DONE			Hà Nam			
+mtDNA_50	2025-05-19	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-05-20 00:00:00										DONE	2025-05-20		Hà Nam			
+mtDNA_51	2025-05-19	92			-	-	92.0	-	-	-	-	90.0	2	90.0	2025-05-22 00:00:00										DONE	2025-05-22	2025-07-10	Hà Nam			
+mtDNA_52	2025-05-19	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-05-21 00:00:00										DONE		2025-07-09	Hà Nam (1 mẫu thuộc ca Đức Cơ)			
+mtDNA_54	2025-05-20	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-05-22 00:00:00										DONE	2025-05-22		Hà Nam			
+mtDNA_53	2025-05-21	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-05-23 00:00:00										DONE	2025-05-23		Hà Nam			
+mtDNA_55	2025-05-21	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-05-23 00:00:00										DONE	2025-05-23	2025-07-06	Hà Nam			
+mtDNA_56	2025-05-22	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-05-26 00:00:00										DONE	2025-05-22		Hà Nam			
+mtDNA_57	2025-05-22	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-05-26 00:00:00										DONE	2025-05-26	2025-07-06	Hà Nam			
+mtDNA_58	2025-05-23	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-05-26 00:00:00										DONE	2025-05-26	2025-07-06	Hà Nam			
+mtDNA_59	2025-05-23	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-05-27 00:00:00										DONE	2025-05-27		Hà Nam			
+mtDNA_60	2025-05-24	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-05-28 00:00:00										DONE	2025-05-28		Hà Nam			
+mtDNA_61	2025-05-24	90			-	-	90.0	-	-	-	-	88.0	2	88.0	2025-05-27 00:00:00										DONE	2025-05-27	2025-07-06	Hà Nam (1 mẫu thuộc ca Đức Cơ)			
+mtDNA_62	2025-05-25	90			-	-	90.0	-	-	-	-	89.0	1	89.0	2025-05-29 00:00:00										DONE	2025-05-29	2025-07-09	Hà Nam			
+mtDNA_63	2025-05-27	90			-	-	90.0	-	-	-	-	90.0	-	90.0	2025-05-30 00:00:00										DONE	2025-05-30		Hà Nam			
+mtDNA_64	2025-05-27	90			-	-	90.0	-	-	-	-	89.0	1	89.0	2025-05-30 00:00:00										DONE	2025-05-30	2025-07-06	Hà Nam			
+mtDNA_65	2025-05-27	90			-	-	90.0	-	-	-	-	90.0	-	90.0	2025-06-02 00:00:00										DONE	2025-06-02		Hà Nam			
+mtDNA_66	2025-05-28	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-05-29 00:00:00										DONE	2025-05-29	2025-07-06	Hà Nam + 13 Đức Cơ			
+mtDNA_67	2025-05-29	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-06-03 00:00:00										DONE	2025-06-03	2025-07-06	Hà Nam			
+mtDNA_68	2025-05-29	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-06-03 00:00:00										DONE	2025-06-03		Hà Nam + 2 Đức Cơ			
+mtDNA_69	2025-05-30	92			-	-	92.0	-	-	-	-	87.0	5	87.0	2025-06-04 00:00:00										DONE	2025-06-04	2025-07-06	Hà Nam			
+mtDNA_70	2025-06-02	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-06-05 00:00:00	2025-06-06 00:00:00	2025-06-07 00:00:00	2025-06-08	2025-06-09 00:00:00	2025-06-10 00:00:00	2025-06-11 00:00:00	2025-06-12 00:00:00			DONE	2025-06-05		Hà Nam			
+mtDNA_71	2025-06-02	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-06-09 00:00:00										DONE	2025-06-09	2025-07-06	Hà Nam			
+mtDNA_72	2025-06-02	92			-	-	92.0	-	-	-	-	91.0	1	91.0	2025-06-06 00:00:00	2025-06-06 00:00:00	2025-06-07 00:00:00	2025-06-08	2025-06-09 00:00:00	2025-06-10 00:00:00	2025-06-11 00:00:00	2025-06-12 00:00:00			DONE	2025-06-06	2025-07-06	Hà Nam			
+mtDNA_73	2025-06-04	92			-	-	92.0	-	-	-	-	90.0	2	90.0	2025-06-09 00:00:00										DONE	2025-06-09	2025-07-06	Hà Nam			
+mtDNA_74	2025-06-04	92			-	-	92.0	-	-	-	-	92.0	-	92.0	2025-06-05 00:00:00										DONE	2025-06-05		Hà Nam + 2 Đức Cơ			
+mtDNA_75	2025-06-05	92			-	-	92.0	-	-	-	-	90.0	2	90.0	2025-06-10 00:00:00										DONE	2025-06-10	2025-07-07	Hà Nam			
+mtDNA_76	2025-06-06	92			HQ	-	92.0	-	-	-	-	90.0	1	90.0	2025-06-10 00:00:00										Done	2025-06-10	2025-07-06	Hà Nam (1 mẫu tách lại ở mt153, trả KQ tương ứng mt153)			
+mtDNA_77	2025-06-06	92			P	-	92.0	-	-	-	-	91.0	1	91.0	2025-06-09 00:00:00										DONE	2025-06-09	2025-07-07	Hà Nam			
+mtDNA_78	2025-06-06	92			T	-	92.0	-	-	-	-	86.0	6	86.0	2025-06-09 00:00:00										DONE	2025-06-09	2025-06-26	Hà Nam + 71 Đức Cơ (trong đó 1 Hà Nam)			
+mtDNA_79	2025-06-08	90			H	-	90.0	-	-	-	-	89.0	1	89.0											DONE	2025-06-17	2025-07-06	Hà Nam			
+mtDNA_80	2025-06-08	90			P	-	90.0	-	-	-	-	88.0	2	88.0											DONE	2025-06-11	2025-07-06	Hà Nam			
+mtDNA_81	2025-06-08	90			P	-	90.0	-	-	-	-	86.0	4	86.0											DONE	2025-06-12	2025-07-06	Hà Nam			
+mtDNA_82	2025-06-09	90			Q	-	90.0	-	-	-	-	88.0	2	88.0											DONE	2025-06-12	2025-07-06	Hà Nam			
+mtDNA_83	2025-06-09	92			Q	-	92.0	-	-	-	-	87.0	5	87.0											DONE	2025-06-16	2025-07-06	Hà Nam +  8 Đức Cơ			
+mtDNA_88	2025-06-10	90			P	-	90.0	-	-	-	-	86.0	4	86.0											DONE	2025-06-11	2025-07-06	Hà Nam + 29 Đức Cơ			
+mtDNA_84	2025-06-10	90			H	-	90.0	-	-	-	-	86.0	4	86.0											DONE	2025-06-13	2025-07-06	Hà Nam			
+mtDNA_85	2025-06-10	90			P	-	90.0	-	-	-	-	85.0	5	85.0											DONE	2025-06-15	2025-07-06	Hà Nam			
+mtDNA_86	2025-06-12	90			Q	-	90.0	-	-	-	-	87.0	3	87.0											DONE	2025-06-15	2025-07-06	Hà Nam			
+mtDNA_87	2025-06-12	90			H	-	90.0	-	-	-	-	82.0	8	82.0											DONE	2025-06-15	2025-07-06	Hà Nam			
+mtDNA_89	2025-06-13	90			P	-	90.0	-	-	-	-	84.0	6	84.0											DONE	2025-06-15	2025-07-14	Hà Nam			
+mtDNA_90	2025-06-13	90			H	-	90.0	-	-	-	-	87.0	3	87.0											DONE	2025-06-16	2025-07-06	Hà Nam			
+mtDNA_91	2025-06-13	90			P	-	90.0	-	-	-	-	88.0	2	88.0											DONE	2025-06-18	2025-07-06	Hà Nam			
+mtDNA_92	2025-06-14	91			Q	-	91.0	-	-	-	-	88.0	3	88.0											DONE	2025-06-18	2025-07-09	Hà Nam + 1 Đức Cơ			
+mtDNA_93	2025-06-16	90			P	-	90.0	-	-	-	-	90.0	-	90.0											DONE	2025-06-18		Hà Nam			
+mtDNA_94	2025-06-16	92			H	-	92.0	-	-	-	-	91.0	1	91.0	 	 	 								DONE	2025-06-17	2025-07-06	Hà Nam			
+mtDNA_95	2025-06-17	92			QR	-	92.0	-	-	-	-	91.0	1		 	 	 								DONE	2025-06-19	2025-07-06	Hà Nam			
+mtDNA_96	2025-06-17	90			HT	-	90.0	-	-	-	-	87.0	3		 	 	 								DONE	2025-06-20	2025-07-06	Hà Nam			
+mtDNA_97	2025-06-17	90			P	-	90.0	-	-	-	-	87.0	3		 	 	 								DONE	2025-06-20	2025-07-07	Hà Nam			
+mtDNA_98	2025-06-17	90			H	-	90.0	-	-	-	-	86.0	4		 	 	 								DONE	2025-06-19	2025-07-06	Hà Nam + 15 Đức Cơ			
+mtDNA_102	2025-06-18	92			H	-	92.0	-	-	-	-	89.0	3		 	 	 								DONE	2025-06-22	2025-07-06	Hà Nam + 2 Đức Cơ 			
+mtDNA_99	2025-06-19	90			P	-	90.0	-	-	-	-	86.0	4												DONE	2025-06-22	2025-07-06	Hà Nam			
+mtDNA_100	2025-06-19	90			H	-	90.0	-	-	-	-	88.0	2												DONE	2025-06-22	2025-07-06	Hà Nam			
+mtDNA_101	2025-06-20	90			H	-	90.0	-	-	-	-	86.0	4												DONE	2025-06-22	2025-07-06	Hà Nam			
+mtDNA_103	2025-06-20	91			H	-	91.0	-	-	-	-	91.0	-												DONE	2025-06-22		Hà Nam (1 mẫu lặp lại từ bước tách)			
+mtDNA_104	2025-06-20	90			H	-	90.0	-	-	-	-	90.0	-												DONE	2025-06-23		Hà Nam			
+mtDNA_105	2025-06-22	90			HT	-	90.0	-	-	-	-	88.0	2												DONE	2025-06-22		Hà Nam			
+mtDNA_106	2025-06-22	90			PQR	-	90.0	-	-	-	-	90.0	-												DONE	2025-06-24		Hà Nam			
+mtDNA_108	2025-06-22	92			H	-	92.0	-	-	-	-	92.0	-												DONE	2025-06-25		Hà Nam + 2 Đức Cơ 			
+mtDNA_107	2025-06-22	90			P	-	90.0	-	-	-	-	89.0	1												DONE	2025-06-24	2025-07-09	Hà Nam			
+mtDNA_109	2025-06-23	90			R	-	90.0	-	-	-	-	85.0	5												DONE	2025-06-26	2025-07-09	Hà Nam			
+mtDNA_110	2025-06-23	90			P	-	90.0	-	-	-	-	89.0	1												DONE	2025-06-25	2025-07-09	Hà Nam			
+mtDNA_111	2025-06-24	90			H	-	90.0	-	-	-	-	89.0	1												DONE	2025-06-26	2025-07-09	Hà Nam			
+mtDNA_112	2025-06-25	90			HR	-	90.0	-	-	-	-	88.0	2												DONE	2025-06-27	2025-07-14	Hà Nam			
+mtDNA_113	2025-06-26	83			PR	-	83.0	-	-	-	-	81.0	2												DONE	2025-06-27	2025-07-10	Hà Nam + 4 Lâm Đồng			
+mtDNA_114	2025-06-26	90			R	-	90.0	-	-	-	-	89.0	1												DONE	2025-06-30	2025-07-09	Hà Nam			
+mtDNA_115	2025-06-27	90			H	-	90.0	-	-	-	-	90.0	-												DONE	2025-06-30		Hà Nam			
+mtDNA_116	2025-06-27	90			P	-	90.0	-	-	-	-	88.0	2												DONE	2025-06-30	2025-07-16	Hà Nam (1 mẫu hold theo yêu cầu của lab)			
+mtDNA_117	2025-06-28	90			QR	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-01	2025-07-09	Hà Nam			
+mtDNA_118	2025-06-28	90			H	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-01	2025-07-09	Hà Nam			
+mtDNA_119	2025-06-29	90			P	-	90.0	-	-	-	-	89.0	1												DONE	2025-06-30	2025-07-09	Hà Nam			
+mtDNA_120	2025-06-29	90			HT	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-01	2025-07-09	Hà Nam			
+mtDNA_125	2025-06-30	90			QR	-	90.0	-	-	-	-	90.0	-												DONE	2025-07-03		Hà Nam			
+mtDNA_126	2025-06-30	90			P	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-02	2025-07-09	Hà Nam			
+mtDNA_121	2025-06-30	90			H	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-03	2025-07-09	Hà Nam + 39 Thái Bình			
+mtDNA_123	2025-07-03	90			H	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-06	2025-08-11	Thái Bình			
+mtDNA_124	2025-07-03	90			R	-	90.0	-	-	-	-	82.0	8												DONE	2025-07-06	2025-08-11	Thái Bình + 16 Quảng Trị + 30 Quảng Bình			
+mtDNA_127	2025-07-03	90			Q	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-10	2026-01-28	Thái Bình			
+mtDNA_122	2025-07-03	90			HT	-	90.0	-	-	-	-	85.0	5												DONE	2025-07-06	2025-08-11	Thái Bình			
+mtDNA_128	2025-07-04	90			R	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-10	2025-08-11	Thái Bình			
+mtDNA_129	2025-07-04	90			PT	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-06	2025-08-11	Thái Bình			
+mtDNA_130	2025-07-05	90			P	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-07	2025-08-11	Thái Bình			
+mtDNA_131	2025-07-05	90			T	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-08	2025-08-11	Thái Bình			
+mtDNA_132	2025-07-05	90			H	-	90.0	-	-	-	-	84.0	6												DONE	2025-07-08	2025-09-26	Thái Bình + 18 Quảng Nam			
+mtDNA_133	2025-07-10	90			HQ	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-14	2025-09-26	Thái Bình 			
+mtDNA_134	2025-07-10	90			HP	-	90.0	-	-	-	-	85.0	5												DONE	2025-07-14	2025-08-11	Thái Bình + 8 Quảng Ngãi + 1 Hà Nam + 46 Bình Định			
+mtDNA_135	2025-07-11	90			HTQ	-	90.0	-	-	-	-	90.0	-												DONE	2025-07-14		Thái Bình + 4 Bắc Giang + 15 Quảng Nam + 3 Quảng Ninh + 12 Huế			
+mtDNA_136	2025-07-11	90			T	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-14	2025-08-11	Thái Bình + 13 Bắc Giang			
+mtDNA_137	2025-07-12	90			H	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-14	2025-09-26	Thái Bình + 30 Bắc Giang			
+mtDNA_138	2025-07-13	90			H	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-15	2026-01-28	45 Quảng Ngãi + 34 Thái Bình + 11 Nam ĐỊnh			
+mtDNA_139	2025-07-14	90			Q	-	90.0	-	-	-	-	90.0	-												DONE	2025-07-16		Thái Bình + 6 Nam Định			
+mtDNA_140	2025-07-14	90			H	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-16	2025-09-26	Thái Bình + 7 Nam Định + 16 Phú Yên			
+mtDNA_141	2025-07-14	90			PT	-	90.0	-	-	-	-	90.0	-												DONE	2025-07-15		Thái Bình + 10 Khánh Hòa + 3 Nam Định			
+mtDNA_142	2025-07-15	90			H	-	90.0	-	-	-	-	87.0													 	2025-07-16		Thái Bình + 20 Khánh Hòa			
+mtDNA_143	2025-07-16	90			T	-	90.0	-	-	-	-	88.0													 	2025-07-17		Thái Bình + 24 Nam Định			
+mtDNA_144	2025-07-16	90			Q	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-18	2025-09-26	Thái Bình + 71 Nam Định			
+mtDNA_145	2025-07-17	90			T	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-18	2025-08-11	Thái Bình + 3 Khánh Hòa + 5 Ninh Thuận + 3 Nam ĐỊnh			
+mtDNA_146	2025-07-17	90			HP	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-17	2025-08-11	Thái Bình + 47 Vĩnh Phúc + 20 Thái Nguyên + 3 Ninh Thuận			
+mtDNA_147	2025-07-18	90			T	-	90.0	-	-	-	-	86.0	2												 	2025-07-21	2025-08-11	Thái Bình + 33 Vĩnh Phúc + 14 Hòa Bình + 9 Sơn La + 10 Thái Nguyên			
+mtDNA_163	2025-07-18	90			HP	-	90.0	-	-	-	-	87.0													 	2025-07-18		Thái Binh + 8 Bắc Ninh + 11 Quảng Bình + 13 Thanh Hóa + 4 Đức Cơ			
+mtDNA_163_L2	2025-07-18	5			H	-	5.0	-	-	-	-	5.0	-												DONE	2025-07-18		Thanh Hóa			
+mtDNA_148	2025-07-19	90			H	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-21	2025-09-26	Bình Thuận + Thái Bình + Thái Nguyên + Tuyên Quang + Bắc Kạn			
+mtDNA_149	2025-07-19	90			T	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-21	2026-01-28	Thái Bình + 26 Phú Thọ + Tuyên Quang  + Thái Nguyên + Tuyên Quang + Bắc Kạn			
+mtDNA_150	2025-07-19	90			HT	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-21	2025-08-11	Thái Bình + 20 Cao Bằng + 40 Phú Thọ + 6 Điện Biên			
+mtDNA_151	2025-07-21	90			H	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-22	2025-09-26	Thái Bình + Tuyên Quang + Lâm Đồng  + Thái Nguyên			
+mtDNA_164	2025-07-21	90			HT	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-21	2025-08-11	Thanh Hóa + Yên Bái + Thái Bình + 2 Đức Cơ			
+mtDNA_165	2025-07-21	90			PT	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-22	2025-09-26	Thanh Hóa + Yên Bái + Hà Giang + 1 Đức Cơ			
+mtDNA_172	2025-07-22	89			TQ	-	89.0	-	-	-	-	85.0	4												DONE	2025-07-22	2025-08-11	Thanh Hóa + Thái Bình + 30 mẫu ưu tiên			
+mtDNA_152	2025-07-22	90			HQ	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-23	2025-08-20	Lâm Đồng + Thái Bình + Tuyên Quang + Bắc Kạn + Thái Nguyên			
+mtDNA_153	2025-07-23	90			HTQ	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-24	2025-08-20	Cao Bằng + ĐẮK NÔNG + Thái Bình + Điện Biên + Phú Thọ			
+mtDNA_154	2025-07-23	90			PT	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-24	2025-08-20	Phú Thọ + Lạng Sơn + Thái Bình			
+mtDNA_155	2025-07-24	90			HTP	-	90.0	-	-	-	-	88.0													 	2025-07-25		Phú Thọ + Lạng Sơn + Thái Bình			
+mtDNA_156	2025-07-25	90			HP	-	90.0	-	-	-	-	85.0													 	2025-07-25		Phú Thọ + Lạng Sơn + Thái Bình + Đắc Lắk + Thanh Hóa			
+mtDNA_157	2025-07-25	90			HP	-	90.0	-	-	-	-	87.0	3												DONE	2025-07-27	2026-01-15	Thái Bình + Phú Thọ + Gia Lai + Lai Châu			
+mtDNA_158	2025-07-26	90			HP	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-27	2025-08-20	Phú Thọ + Yên Bái + Gia Lai + lạng Sơn + Kontum			
+mtDNA_159	2025-07-26	89			HP	-	89.0	-	-	-	-	88.0	1												DONE	2025-07-27	2025-08-20	Phú Thọ + Thanh Hóa			
+mtDNA_174	2025-07-27	91			TQ	-	91.0	-	-	-	-	86.0	5												DONE	2025-07-28	2025-09-26	Bắc Ninh + Thanh Hóa + Lào Cai			
+mtDNA_160	2025-07-27	90			H	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-28	2025-08-20	Phú Thọ + Thanh Hóa			
+mtDNA_161	2025-07-28	90			HTQ	-	90.0	-	-	-	-	88.0	2												DONE	2025-07-29	2025-09-26	Phú Thọ + Thanh Hóa			
+mtDNA_162	2025-07-29	90			P	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-30	2025-09-26	Phú Thọ + Thanh Hóa			
+mtDNA_166	2025-07-29	90			HT	-	90.0	-	-	-	-	86.0	4												DONE	2025-07-30	2025-09-26	Thanh Hóa			
+mtDNA_167	2025-07-30	90			HQ	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-31	2025-09-26	Thanh Hóa + Yên Bái			
+mtDNA_168	2025-07-30	90			HQ	-	90.0	-	-	-	-	89.0	1												DONE	2025-07-31	2025-08-20	Thanh Hóa + Vĩnh Phúc			
+mtDNA_169	2025-07-31	90			P	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-01	2025-09-26	Thanh Hóa			
+mtDNA_177	2025-07-31	90			T	-	90.0	-	-	-	-	86.0	4												DONE	2025-08-01	2025-09-26	Thanh Hóa			
+mtDNA_170	2025-07-31	90			HT	-	90.0	-	-	-	-	79.0	11												DONE	2025-08-04	2025-09-26	Thanh Hóa + Yên Bái			
+mtDNA_190	2025-08-01	90			HT	-	90.0	-	-	-	-	89.0	1												DONE	2025-08-01	2025-08-20	Thanh Hóa + 8 mẫu ưu tiên			
+mtDNA_171	2025-08-02	90			T	-	90.0	-	-	-	-	83.0	7												DONE	2025-08-05	2025-09-26	Thanh Hóa + Yên Bái			
+mtDNA_173	2025-08-03	91			P	-	91.0	-	-	-	-	89.0	2												DONE	2025-08-05	2025-09-26				
+mtDNA_175	2025-08-03	90			HQ	-	90.0	-	-	-	-	89.0	1												DONE	2025-08-04	2025-08-20				
+mtDNA_176	2025-08-03	90			HQ	-	90.0	-	-	-	-	89.0	1												DONE	2025-08-05	2025-09-26	Thanh Hóa			
+mtDNA_179	2025-08-01	90			PT	-	90.0	-	-	-	-	85.0	5												DONE	2025-08-04	2025-09-26	Thanh Hóa			
+mtDNA_178	2025-08-04	90			T	-	90.0	-	-	-	-	89.0	1												DONE	2025-08-06	2025-10-20	Thanh Hóa			
+mtDNA_180	2025-08-05	90			HQ	-	90.0	-	-	-	-	87.0	3												DONE	2025-08-06	2025-10-20	Thanh Hóa			
+mtDNA_181	2025-08-05	90			H	-	90.0	-	-	-	-	89.0	1												DONE	2025-08-07	2025-10-20	Thanh Hóa			
+mtDNA_182	2025-08-06	91			T	-	91.0	-	-	-	-	90.0	1												DONE	2025-08-07	2025-10-20	Thanh Hóa			
+mtDNA_183	2025-08-06	90			HP	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-07	2025-10-20	Thanh Hóa			
+mtDNA_184	2025-08-07	90			HQ	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-08	2025-10-20	Thanh Hóa			
+mtDNA_185	2025-08-07	90			PT	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-08	2025-10-20	Thanh Hóa			
+mtDNA_206	2025-08-08	90			HPQT	-	90.0	-	-	-	-	86.0													 	2025-08-11		Thanh Hóa			
+mtDNA_186	2025-08-09	90			PT	-	90.0	-	-	-	-	87.0	3												DONE	2025-08-12	2025-10-20	Thanh Hóa			
+mtDNA_187	2025-08-09	90			HQ	-	90.0	-	-	-	-	88.0													 	2025-08-14		Thanh Hóa			
+mtDNA_188	2025-08-09	90			HQ	-	90.0	-	-	-	-	89.0													 	2025-08-11		Thanh Hóa			
+mtDNA_189	2025-08-10	90			PT	-	90.0	-	-	-	-	85.0													 	2025-08-12		Thanh Hóa			
+mtDNA_191	2025-08-11	90			PT	-	90.0	-	-	-	-	87.0	3												DONE	2025-08-14	2025-10-20	Thanh Hóa			
+mtDNA_207	2025-08-18	90			HP	-	90.0	-	-	-	-	86.0													 	2025-08-19		Thanh Hóa			
+mtDNA_208	2025-08-18	90			Q	-	90.0	-	-	-	-	89.0	1												DONE	2025-08-20	2025-10-20	Thanh Hóa			
+mtDNA_209	2025-08-18	90			HP	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-19	2025-10-20	Thanh Hóa			
+mtDNA_192	2025-08-19	90			HPQTX	-	90.0	-	-	-	-	87.0	3												DONE	2025-08-21	2026-01-15	Thanh Hóa			
+mtDNA_210	2025-08-20	90			PT	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-20	2025-10-20	Thanh Hóa			
+mtDNA_211	2025-08-21	90			HT	-	90.0	-	-	-	-	87.0													 	2025-08-21		Thanh Hóa			
+mtDNA_212	2025-08-21	90			Q	-	90.0	-	-	-	-	87.0													 	2025-08-22		Thanh Hóa			
+mtDNA_213	2025-08-21	90			PT	-	90.0	-	-	-	-	87.0													 	2025-08-22		Thanh Hóa			
+mtDNA_214	2025-08-22	90			HT	-	90.0	-	-	-	-	85.0	5												DONE	2025-08-22	2025-10-20	Thanh Hóa			
+mtDNA_194	2025-08-22	90			Q	-	90.0	-	Q	-	N	89.0													 	2025-08-26		Thanh Hóa			
+mtDNA_195	2025-08-25	90			HP	-	90.0	-	-	-	-	88.0	2												DONE	2025-08-25	2025-10-20	Thanh Hóa			
+mtDNA_196	2025-08-25	90			T	-	90.0	-	-	-	-	85.0	5												DONE	2025-08-26	2025-10-20	Thanh Hóa			
+mtDNA_197	2025-08-25	90			P	-	90.0	-	-	-	-	82.0													 	2025-08-27		Thanh Hóa			
+mtDNA_198	2025-08-25	90			H	-	90.0	-	-	-	-	86.0													 	2025-08-26		Thanh Hóa			
+mtDNA_199	2025-08-25	90			T	-	90.0	-	T	-	N	88.0	2												DONE	2025-08-27	2025-10-20	Thanh Hóa			
+mtDNA_200	2025-08-25	90			Q	-	90.0	-	Q	-	N	88.0	2												DONE	2025-08-28	2025-10-20	Thanh Hóa			
+mtDNA_201	2025-08-26	90			P	-	90.0	-	P	-	N	86.0													 	2025-08-28		Thanh Hóa			
+mtDNA_202	2025-08-26	90			XT	-	90.0	-	T	-	N	81.0													 	2025-08-29		Thanh Hóa			
+mtDNA_227	2025-08-26	90			H	-	90.0	-	H	-	N	88.0	2												DONE	2025-08-27	2025-10-20	Thanh Hóa + 9 ưu tiên			
+mtDNA_203	2025-08-27	90			XT	-	90.0	-	TP	-	N	85.0													 	2025-08-29		Thanh Hóa			
+mtDNA_204	2025-08-27	90			Q	-	90.0	-	Q	-	N	85.0													 	2025-08-29		Thanh Hóa			
+mtDNA_215	2025-08-27	90			H	-	90.0	-	H	-	N	85.0													 	2025-08-28		Thanh Hóa + 1 ưu tiên			
+mtDNA_218	2025-08-28	90			P	-	90.0	-	P	-	N	82.0													 	2025-09-03		Thanh Hóa			
+mtDNA_216	2025-08-29	90			X	-	90.0	-	QP	-	N	84.0	6												DONE	2025-09-05	2025-10-20	Thanh Hóa			
+mtDNA_217	2025-08-29	90			PQ	-	90.0	-	QP	-	N	89.0	1												DONE	2025-09-05	2026-01-15	Thanh Hóa			
+mtDNA_219	2025-09-03	90			HT	-	90.0	-	HP	-	N	87.0													 	2025-09-03		Thanh Hóa			
+mtDNA_220	2025-09-03	90			HTX	-	90.0	-	TP	-	N	83.0													 	2025-09-05		Thanh Hóa			
+mtDNA_205	2025-09-03	90			HX	-	90.0	-	HP	-	N	89.0	1												DONE	2025-09-05	2025-10-20	Thanh Hóa			
+mtDNA_221	2025-09-04	90			HX	-	90.0	-	HP	-	N	83.0													 	2025-09-10		Thanh Hóa			
+mtDNA_222	2025-09-05	90			XT	-	90.0	-	T	-	PN	89.0	1												DONE	2025-09-11	2025-10-20	Thanh Hóa			
+mtDNA_223	2025-09-05	90			H	-	90.0	-	H	-	PN	80.0	10												DONE	2025-09-11	2025-10-20	Thanh Hóa			
+mtDNA_193	2025-09-05	90			HT	-	90.0	-	H	-	PN	86.0	4												DONE	2025-09-11	2025-10-20	Thanh Hóa			
+mtDNA_228	2025-09-10	90			X	-	90.0	-	T	-	HN	88.0													 	2025-09-12		Thanh Hóa + Cà Mau + Kiên Giang + Sơn La			
+mtDNA_224	2025-09-18	90			T	-	90.0	-	T	-	HN	89.0	1												DONE	2025-09-19	2026-01-28	Thanh Hóa			
+mtDNA_226	2025-09-18	90			HQ	-	90.0	-	QP	-	N	89.0	1												DONE	2025-09-19	2026-01-28	Thanh Hóa			
+mtDNA_225	2025-09-18	90			X	-	90.0	-	P	-	PN	82.0	8												DONE	2025-09-22	2026-01-28	Thanh Hóa			
+mtDNA_230	2025-09-18	90			H	-	90.0	-	H	-	N	84.0	6												DONE	2025-09-19	2026-01-28	Thanh Hóa			
+mtDNA_231	2025-09-18	90			T	-	90.0	-	T	-	PN	88.0	2												DONE	2025-09-22	2026-01-28	Thanh Hóa			
+mtDNA_232	2025-09-19	90			Q	-	90.0	-	QP	-	N	84.0	6												DONE	2025-09-24	2026-01-28	Thanh Hóa			
+mtDNA_233	2025-09-19	90			HT	-	90.0	-	H	-	N	87.0													 	2025-09-22		Thanh Hóa			
+mtDNA_235	2025-09-24	90			X	-	90.0	-	H	-	N	81.0	9												DONE	2025-09-29	2026-01-28	Thanh Hóa + 1 ưu tiên Bình phước			
+mtDNA_236	2025-09-25	90			T	-	90.0	-	H	-	N	83.0	7												DONE	2025-09-26	2026-01-28	Thanh Hóa + 7 ưu tiên			
+mtDNA_237	2025-09-25	90			T	-	90.0	-	HT	-	N	89.0	1												DONE	2025-09-29	2026-01-28	Thanh Hóa + 3 ưu tiên			
+mtDNA_238	2025-09-25	90			Q	-	90.0	-	H	-	N	86.0	4												DONE	2025-09-29	2026-01-28	Thanh Hóa + 1 ưu tiên Sơn La			
+mtDNA_234	2025-09-27	90			T	-	90.0	-	H	-	N	86.0	4												DONE	2025-09-30	2026-01-28	Thanh Hóa			
+mtDNA_244	2025-09-27	90			X	-	90.0	-	H	-	N	88.0	2												DONE	2025-10-02	2026-01-28	Thanh Hóa + 2 ưu tiên Đức Cơ			
+mtDNA_239	2025-09-29	90			Q	-	90.0	-	HQ	-	N	86.0	4												DONE	2025-10-02	2026-01-28	Thanh Hóa			
+mtDNA_240	2025-09-29	90			HT	-	90.0	-	HT	-	N	85.0	4												 	2025-10-02	2026-01-28	Thanh Hóa			
+mtDNA_241	2025-10-01	90			X	-	90.0	-	H	-	N	89.0	1												DONE	2025-10-06	2026-01-28	Thanh Hóa			
+mtDNA_242	2025-10-01	90			Q	-	90.0	-	HQ	-	N	87.0	3												DONE	2025-10-06	2026-01-15	Thanh Hóa			
+mtDNA_243	2025-10-01	90			H	-	90.0	-	H	-	N	88.0	2												DONE	2025-10-06	2026-01-28	Thanh Hóa			
+mtDNA_245	2025-10-02	90			Q	-	90.0	-	HQ	-	N	89.0	1												DONE	2025-10-08	2026-01-28	Thanh Hóa			
+mtDNA_246	2025-10-02	90			X	-	90.0	-	H	-	N	88.0	2												DONE	2025-10-08	2026-01-28	Thanh Hóa			
+mtDNA_247	2025-10-05	90			Q	-	90.0	-	HQ	-	N	88.0	2												DONE	2025-10-08	2026-01-30	Thanh Hóa			
+mtDNA_248	2025-10-05	90			X	-	90.0	-	H	-	N	89.0	1												DONE	2025-10-10	2026-01-30	Thanh Hóa			
+mtDNA_249	2025-10-05	90			T	-	90.0	-	HT	-	N	86.0	4												DONE	2025-10-08	2026-01-30	Thanh Hóa			
+mtDNA_250	2025-10-07	90			Q	-	90.0	-	HQ	-	N	86.0	4												DONE	2025-10-10	2026-01-15	Thanh Hóa			
+mtDNA_229	2025-10-07	90			T	-	90.0	-	HT	-	N	89.0	1												DONE	2025-10-10	2026-01-30	Thanh Hóa			
+mtDNA_251	2025-10-09	90			X	-	90.0	-	H	-	N	88.0	2												DONE	2025-10-10	2026-01-30	Thanh Hóa			
+mtDNA_252	2025-10-09	90			Q	-	90.0	-	HQ	-	N	86.0	4												DONE	2025-10-10	2026-01-30	Thanh Hóa			
+mtDNA_253	2025-10-10	90			XT	-	90.0	-	H	-	N	87.0	3												DONE	2025-10-14	2026-01-15	Thanh Hóa			
+mtDNA_254	2025-10-10	90			Q	-	90.0	-	HQ	-	N	87.0	3												DONE	2025-10-14	2026-01-15	Thanh Hóa			
+mtDNA_255	2025-10-11	90			X	-	90.0	-	H	-	N	89.0	1												DONE	2025-10-14	2026-01-30	Thanh Hóa			
+mtDNA_257	2025-10-17	90			Q	-	90.0	-	HQ	-	N	87.0	3												DONE	2025-10-22	2026-01-15	Thanh Hóa			
+mtDNA_258	2025-10-17	90			X	-	90.0	-	H	-	N	85.0	5												DONE	2025-10-22	2026-01-30	Thanh Hóa			
+mtDNA_259	2025-10-15	90			PQT	-	90.0	-	P	-	N	86.0	4												DONE	2025-10-16	2026-01-30	Thanh Hóa			
+mtDNA_256	2025-10-16	90			TQ	-	90.0	-	H	-	N	82.0													 	2025-10-17		Thanh Hóa			
+mtDNA_260	2025-10-17	90			T	-	90.0	-	HT	-	N	87.0	3												DONE	2025-10-20	2026-01-30	Thanh Hóa			
+mtDNA_261	2025-10-17	90			Q	-	90.0	-	HQ	-	N	89.0	1												DONE	2025-10-22	2026-01-30	Thanh Hóa			
+mtDNA_262	2025-10-20	90			X	-	90.0	-	H	-	N	85.0													 	2025-10-22		Thanh Hóa			
+mtDNA_263	2025-10-20	90			T	-	90.0	-	H	-	N	87.0	3												DONE	2025-10-22	2026-01-30	Thanh Hóa			
+MS_091025_001	2025-10-20	90			T	-	90.0	-	HP	-	N	88.0													 	2025-11-25		Thanh Hóa - test hệ thống	 Phê duyệt trên LIMS	Back up trên NAS (88o90_20251125)	
+mtDNA_264	2025-10-21	90			Q	-	90.0	-	H	-	N	89.0	1												DONE	2025-10-22	2026-01-30	Thanh Hóa			
+mtDNA_265	2025-10-21	90			T	-	90.0	-	H	-	N	88.0	2												DONE	2025-10-24	2026-01-15	Thanh Hóa			
+mtDNA_266	2025-10-22	90			X	-	90.0	-	H	-	N	87.0	3												DONE	2025-10-24	2026-01-30	Thanh Hóa			
+mtDNA_267	2025-10-22	90			TQ	-	90.0	-	H	-	N	88.0													 	2025-10-24		Thanh Hóa			
+mtDNA_268	2025-10-23	90			X	-	90.0	-	HT	-	N	87.0	3												DONE	2025-10-28	2026-01-15	Thanh Hóa + 1 ưu tiên			
+mtDNA_269	2025-10-23	90			T	-	90.0	-	-	-	N	86.0													 	2025-10-24		Thanh Hóa + 1 ưu tiên			
+mtDNA_270	2025-10-24	90			Q	-	90.0	-	P	-	N	88.0	2												DONE	2025-10-29	2026-01-15	Thanh Hóa			
+mtDNA_283	2025-10-24	92			T	-	92.0	-	H	-	N	91.0	1												DONE	2025-10-28	2026-01-30	Thanh Hóa			
+mtDNA_271	2025-10-24	90			HX	-	90.0	-	H	-	N	88.0	2												DONE	2025-10-29	2026-01-30	Thanh Hóa			
+mtDNA_272	2025-10-28	90			X	-	90.0	-	P	-	N	89.0	1												DONE	2025-10-29	2026-01-30	Thanh Hóa			
+mtDNA_273	2025-10-28	90			Q	-	90.0	-	P	-	N	90.0	-												DONE	2025-10-31		Thanh Hóa			
+mtDNA_274	2025-10-28	90			T	-	90.0	-	P	-	N	89.0	1												DONE	2025-10-31	2026-01-30	Thanh Hóa			
+mtDNA_275	2025-10-29	90			X	-	90.0	-	P	-	N	90.0	-												DONE	2025-10-31		Thanh Hóa			
+mtDNA_276	2025-10-29	92			XT	-	92.0	-	P	-	N	92.0	-												DONE	2025-10-30		Thanh Hóa + 2 ưu tiên Ninh Bình			
+mtDNA_277	2025-10-29	92			TQ	-	92.0	-	P	-	N	92.0	-												DONE	2025-10-30		Thanh Hóa + 2 ưu tiên Ninh Bình			
+mtDNA_278_L1	2025-10-30	12			P	-	12.0	-	P	-	N	10.0	2												DONE	2025-10-30	2025-10-31	Thanh Hóa + 12 ưu tiên			
+mtDNA_278_L2	2025-10-30	90			T	-	90.0	-	P	-	N	88.0	2												DONE	2025-11-03	2026-01-30	Thanh Hóa			
+mtDNA_279	2025-10-31	90			X	-	90.0	-	P	-	N	90.0	-												DONE	2025-11-04		Thanh Hóa			
+mtDNA_280	2025-10-31	90			T	-	90.0	-	P	-	N	83.0	7												DONE	2025-11-04	2026-01-30	Thanh Hóa			
+mtDNA_281	2025-10-31	90			X	-	90.0	-	P	-	N	89.0	1												DONE	2025-11-06	2026-01-15	Thanh Hóa			
+mtDNA_282	2025-11-01	90			Q	-	90.0	-	P	-	N	87.0													 	2025-11-07		Thanh Hóa			
+mtDNA_284	2025-11-01	90			T	-	90.0	-	P	-	N	87.0	3												DONE	2025-11-06	2026-01-15	Thanh Hóa			
+mtDNA_285	2025-11-03	90			Q	-	90.0	-	P	-	N	88.0													 	2025-11-06		Thanh Hóa			
+mtDNA_286	2025-11-03	90			T	-	90.0	-	P	-	N	86.0													 	2025-11-06		Thanh Hóa			
+mtDNA_287	2025-11-04	90			X	-	90.0	-	P	-	N	81.0													 	2025-11-07		Thanh Hóa			
+mtDNA_288	2025-11-04	90			Q	-	90.0	-	P	-	N	90.0	-												DONE	2025-11-06		Thanh Hóa			
+mtDNA_290	2025-11-05	90			T	-	90.0	-	P	-	N	84.0	6												DONE	2025-11-07	2026-01-15	Thanh Hóa			
+mtDNA_291	2025-11-06	90			X	-	90.0	-	H	-	N	82.0	8												DONE	2025-11-10	2026-01-15	Thanh Hóa			
+mtDNA_289	2025-11-06	90			T	-	90.0	-	H	-	N	87.0													 	2025-11-10		Thanh Hóa			
+mtDNA_292	2025-11-07	90			Q	-	90.0	-	P	-	N	89.0													 	2025-11-10		Thanh Hóa			
+mtDNA_294	2025-11-07	90			T	-	90.0	-	P	-	N	87.0													 	2025-11-11		Thanh Hóa			
+mtDNA_295	2025-11-10	90			HQ	-	90.0	-	P	-	N	85.0													 	2025-11-11		Thanh Hóa			
+mtDNA_293	2025-11-11	90			QX	-	90.0	-	H	-	N	84.0	6												DONE	2025-11-12	2026-01-15	Thanh Hóa			
+mtDNA_296	2025-11-11	90			T	-	90.0	-	P	-	N	88.0	2												DONE	2025-11-12	2026-01-15	Thanh Hóa			
+MS_111125_001	2025-11-12	90			T	-	90.0	-	P	-	N	89.0													 	2025-11-28		Thanh Hóa - test hệ thống	Review lần 2 qua excel (251128). Phê duyệt trên LIMS (251203)	Back up trên NAS (89o90_20251128)	
+mtDNA_297	2025-11-12	90			HQ	-	90.0	-	H	-	N	89.0													 	2025-11-13		Thanh Hóa			
+mtDNA_298	2025-11-13	90			QX	-	90.0	-	P	-	N	90.0	-												DONE	2025-11-14		Thanh Hóa			
+mtDNA_299	2025-11-13	90			HT	-	90.0	-	H	-	N	87.0													 	2025-11-13		Thanh Hóa			
+mtDNA_300	2025-11-14	90			X	-	90.0	-	H	-	N	89.0													 	2025-11-18		Thanh Hóa			
+mtDNA_301	2025-11-14	90			Q	-	90.0	-	P	-	N	89.0	1												DONE	2025-11-14	2026-01-15	Thanh Hóa			
+mtDNA_302	2025-11-14	90			T	-	90.0	-	P	-	N	88.0													 	2025-11-18		Thanh Hóa			
+mtDNA_304	2025-11-17	90			QX	-	90.0	-	P	-	N	88.0													 	2025-11-19		Thanh Hóa			
+mtDNA_305	2025-11-17	90			T	-	90.0	-	P	-	N	87.0													 	2025-11-18		Thanh Hóa			
+mtDNA_306	2025-11-17	90			H	-	90.0	-	H	-	N	86.0													 	2025-11-18		Thanh Hóa			
+mtDNA_307	2025-11-17	90			QX	-	90.0	-	P	-	N	85.0													 	2025-11-19		Thanh Hóa			
+MS_121125_001	2025-11-17	90			T	-	90.0	-	P	-	N	86.0													 	2025-11-20		Thanh Hóa - test hệ thống	Phê duyệt trên LIMS	Back up trên NAS  (86o90_20251120)	
+mtDNA_308	2025-11-18	90			H	-	90.0	-	H	-	N	87.0													 	2025-11-19		Thanh Hóa			
+mtDNA_310	2025-11-19	90			Q	-	90.0	-	H	-	N	89.0													 	2025-11-20		Thanh Hóa			
+MS_181125_001	2025-11-19	90			X	-	90.0	-	P	-	N	86.0													 	2025-11-21		Hưng Yên	Phê duyệt trên LIMS	Back up trên NAS  (86o90_20251121)	
+MS_171125_002	2025-11-19	90			T	-	90.0	-	P	-	N	89.0													 	2025-11-25		Hưng Yên	Phê duyệt trên LIMS	Back up trên NAS (89o90_20251125)	
+mtDNA_311	2025-11-20	90			X	-	90.0	-	H	-	N	88.0													 	2025-11-21		Thanh Hóa			
+mtDNA_312	2025-11-20	90			H	-	90.0	-	H	-	N	88.0													 	2025-11-21		Thanh Hóa			
+mtDNA_313	2025-11-21	90			TQ	-	90.0	-	H	-	N	87.0													 	2025-11-24		Thanh Hóa			
+mtDNA_314	2025-11-21	90			X	-	90.0	-	H	-	N	85.0													 	2025-11-24		Thanh Hóa			
+MS_191125_001	2025-11-24	90			HT	-	90.0	-	HT	-	N	87.0													 	2025-11-28		Hưng Yên	Chờ phê duyệt (updated 251205), rv2 qua file compare excel (251128), Phê duyệt trên LIMS (251209)	Back up trên NAS (87o90_20251128)	
+MS_191125_002	2025-11-24	90			Q	-	90.0	-	P	-	N	88.0													 	2025-12-01		Hưng Yên	Review lần 1 và 2 trên excel (251201). Phê duyệt trên LIMS (251203)	Back up trên NAS (88o90_20251201)	
+MS_191125_003	2025-11-25	90			X	-	90.0	-	H	-	N	90.0	-												DONE	2025-11-28		Hưng Yên	Phê duyệt trên LIMS (update 251204), rv2 qua file compare excel (251128)	Back up trên NAS (90o90_20251128)	
+MS_191125_004	2025-11-25	90			Q	-	90.0	-	H	-	N	90.0	-												DONE	2025-11-28		Hưng Yên	Phê duyệt trên LIMS (update 251203), rv2 qua file compare excel (251128)	Back up trên NAS (90o90_20251128)	
+MS_211125_001	2025-11-26	90			X	-	90.0	-	H	-	N	90.0	-												DONE	2025-11-28		Hưng Yên	LIMS chưa fix lỗi compare (update 251203???), rv1 trên excel. rv2 trên excel (251201), Phê duyệt trên LIMS (update 251203)	Back up trên NAS (90o90_20251128)	
+MS_211125_002	2025-11-28	90			T	-	90.0	-	TH	-	N	85.0													 	2025-12-01		Hưng Yên	Phê duyệt trên LIMS (update 251204), rv1 trên excel,  rv2 trên excel (251201)	Back up trên NAS (85o90_20251201)	
+MS_211125_003	2025-11-28	90			Q	-	90.0	-	P	-	N	89.0													 	2025-12-01		Hưng Yên	Review lần 1 và 2 trên excel (251201); Phê duyệt trên LIMS (251203)	Back up trên NAS (89o90_20251201)	
+MS_211125_004	2025-11-28	90			X	-	90.0	-	H	-	N	89.0													 	2025-12-04		Hưng Yên	Review lần 1 trên LIMS (251201), phê duyệt trên LIMS (251203)	Back up trên NAS (89o90_251204)	
+MS_211125_005	2025-11-28	90			H	-	90.0	-	H	-	N	89.0													 	2025-12-05		Hưng Yên	Review lần 1 trên LIMS (251201), phê duyệt trên LIMS (251205)	Back up trên NAS (89o90_251205)	
+MS_211125_006	2025-11-30	90			Q	-	90.0	-	P	-	N	89.0													 	2025-12-02		Hưng Yên	Review lần 1 và 2 trên  excel (251202). Phê duyệt trên LIMS (251203)	Back up trên NAS (89o90_20251202)	
+MS_211125_007	2025-11-30	90			T	-	90.0	-	P	-	N	88.0													 	2025-12-02		Hưng Yên	Review lần 1 trên exel (251201), Review lần 2 trên  excel (251202). Phê duyệt trên LIMS (251203)	Back up trên NAS (88o90_20251202)	
+MS_211125_008	2025-12-02	90			X	-	90.0	-	P	-	N	87.0													 	2025-12-04		Hưng Yên	Review lần 1 trên exel (251202), Phê duyệt trên LIMS (251204)	Back up trên NAS (87o90_251204)	
+MS_251125_001	2025-12-02	90			T	-	90.0	-	P	-	N	88.0													 	2025-12-04		Hưng Yên	Review lần 1 trên exel (251202), Phê duyệt trên LIMS (251204)	Back up trên NAS (88o90_251204)	
+MS_251125_002	2025-12-02	90			Q	-	90.0	-	P	-	N	88.0													 	2025-12-04		Hưng Yên	Phê duyệt trên LIMS (251204)	Back up trên NAS (88o90_251204)	
+MS_251125_003	2025-12-02	90			T	-	90.0	-	T	-	N	86.0													 	2025-12-09		Hưng Yên	Đã up LIMS (251203), rv1 (excel), rv1 (LIM) (251203)	Back up trên NAS (86o90_251209)	
+MS_251125_004	2025-12-02	90			H	-	90.0	-	H	-	N	89.0													 	2025-12-04		Hưng Yên	Review lần 1 trên excel (251202), Đã up LIMS, Phê duyệt trên LIMS (251204)	Back up trên NAS (89o90_251204)	
+MS_251125_005	2025-12-02	90			X	-	90.0	-	P	-	N	85.0													 	2025-12-05		Hưng Yên	Review lần 1 trên excel (251204), rv2 excel -> Tải file final lên LIMS, Phê duyệt LIMS (251205)	Back up trên NAS (85o90_251205)	
+MS_251125_006	2025-12-04	90			T	-	90.0	-	TH	-	N	90.0	-												DONE	2025-12-05		Hưng Yên	Review lần 1 trên excel (251204), rv2 excel -> Tải file final lên LIMS, Phê duyệt LIMS (251205)	Back up trên NAS (90o90_251205)	
+MS_281125_001	2025-12-04	90			QX	-	90.0	-	H	-	N	88.0													 	2025-12-05		Hưng Yên	Review lần 1 trên excel (251205), rv2 excel -> Tải file final lên LIMS, Phê duyệt LIMS (251205)	Back up trên NAS (88o90_251205)	
+MS_281125_002	2025-12-04	90			H	-	90.0	-	H	-	N	89.0													 	2025-12-05		Hưng Yên	Review lần 1 trên excel (251204), rv2 excel -> Tải file final lên LIMS, Phê duyệt LIMS (251205)	Back up trên NAS (89o90_251205)	
+MS_281125_003	2025-12-05	90			X	-	90.0	-	H	-	N	89.0													 	2025-12-08		Hưng Yên		Back up trên NAS (89o90_251208)	
+MS_281125_004	2025-12-05	90			Q	-	90.0	-	H	-	N	88.0													 	2025-12-08		Hưng Yên		Back up trên NAS (88o90_251208)	
+MS_281125_005	2025-12-05	90			T	-	90.0	-	H	-	N	79.0													 	2025-12-15		Hưng Yên			
+MS_281125_006	2025-12-05	90			X	-	90.0	-	H	-	N	88.0													 	2025-12-09		Hưng Yên	Review lần 1 trên excel (251209), rv2 excel , trả qua email nhưng viết nhầm là đã phê duyệt trên LIMS> Tải file final lên LIMS (251210), Đang chờ  phê LIMS	Back up trên NAS (88o90_251209)	
+MS_281125_007	2025-12-07	90			H	-	90.0	-	H	-	N	79.0													 	2025-12-29		Hưng Yên			
+MS_281125_008	2025-12-07	90			T	-	90.0	-	H	-	N	87.0													 	2025-12-09		Hưng Yên		Back up trên NAS (87o90_251209)	
+MS_301125_001	2025-12-08	90			T	-	90.0	-	H	-	N	88.0													 	2025-12-15		Hưng Yên			
+MS_301125_002	2025-12-08	90			Q	-	90.0	-	H	-	N	89.0													 	2025-12-11		Hưng Yên			
+MS_301125_003	2025-12-08	90			X	-	90.0	-	H	-	N	88.0													 	2025-12-11		Hưng Yên			
+MS_301125_004	2025-12-09	90			T	-	90.0	-	H	-	N	89.0													 	2025-12-11		Hưng Yên			
+MS_031225_001	2025-12-10	90			Q	-	90.0	-	QH	-	N	88.0													 	2025-12-15		Hưng Yên			
+MS_031225_002	2025-12-10	90			X	-	90.0	-	XH	-	N	90.0	-												DONE	2025-12-12		Hưng Yên			
+MS_031225_003	2025-12-11	90			HT	-	90.0	-	H	-	N	89.0													 	2025-12-12		Hưng Yên			
+MS_061225_002	2025-12-15	90			X	-	90.0	-	H	-	N	89.0													 	2025-12-17		Hưng Yên			
+MS_061225_003	2025-12-15	90			H	-	90.0	-	H	-	N	88.0													 	2025-12-16		Hưng Yên			
+MS_061225_005	2025-12-15	90			P	-	90.0	-	P	-	N	88.0													 	2025-12-16		Hưng Yên			
+MS_061225_008	2025-12-15	90			Q	-	90.0	-	QH	-	N	86.0													 	2025-12-17		Hưng Yên			
+MS_061225_001	2025-12-16	90			X	-	90.0	-	H	-	N	89.0													 	2025-12-17		Hưng Yên			
+MS_061225_004	2025-12-16	90			X	-	90.0	-	H	-	N	89.0													 	2025-12-18		Hưng Yên			
+MS_111225_001	2025-12-17	90			Q	-	90.0	-	H	-	N	90.0	-												DONE	2025-12-18		Hưng Yên			
+MS_031225_004	2025-12-17	90			P	-	90.0	-	H	-	N	84.0													 	2025-12-18		Hưng Yên			
+MS_031225_005	2025-12-17	90			X	-	90.0	-	H	-	N	90.0	-												DONE	2025-12-19		Hưng Yên			
+MS_061225_006	2025-12-18	90			HP	-	90.0	-	H	-	N	87.0													 	2025-12-22		Hưng Yên			
+MS_061225_010	2025-12-18	90			P	-	90.0	-	H	-	N	88.0													 	2025-12-19		Hưng Yên			
+MS_061225_007	2025-12-18	90			QX	-	90.0	-	H	-	N	90.0	-												DONE	2025-12-19		Hưng Yên			
+MS_061225_009	2025-12-18	90			T	-	90.0	-	H	-	N	88.0														2025-12-22		Hưng Yên			
+MS_121225_002	2025-12-19	90			QX	-	90.0	-	H	-	N	87.0													 	2025-12-23		Hưng Yên			
+MS_151225_001	2025-12-22	90			P	-	90.0	-	P	-	N	90.0	-												DONE	2025-12-22		Hưng Yên			
+MS_151225_002	2025-12-22	90			QX	-	90.0	-	H	-	N	89.0													 	2025-12-23		Hưng Yên			
+MS_151225_003	2025-12-22	90			T	-	90.0	-	H	-	N	86.0													 	2025-12-23		Hưng Yên			
+MS_151225_004	2025-12-22	90			QX	-	90.0	-	H	-	N	84.0													 	2025-12-25		Hưng Yên			
+MS_121225_001	2025-12-25	90			X	-	90.0	-	H	-	N	88.0													 	2025-12-26		Hưng Yên			
+MS_221225_001	2025-12-25	90			Q	-	90.0	-	H	-	N	86.0													 	2025-12-26		Hưng Yên			
+MS_181225_002	2025-12-25	90			H	-	90.0	-	H	-	N	87.0													 	2025-12-26		Hưng Yên			
+MS_181225_001	2025-12-25	90			HT	-	90.0	-	P	-	N	90.0	-												DONE	2025-12-29		Hưng Yên			
+MS_181225_003	2025-12-25	90			XT	-	90.0	-	H	-	N	87.0													 	2025-12-29		Hưng Yên			
+MS_151225_005	2025-12-26	90			X	-	90.0	-	H	-	N	82.0													 	2025-12-30		Hưng Yên			
+MS_181225_004	2025-12-26	90			Q	-	90.0	-	H	-	N	90.0	-												DONE	2025-12-29		Hưng Yên			
+MS_181225_005	2025-12-26	90			P	-	90.0	-	H	-	N	87.0													 	2025-12-30		Hưng Yên			
+MS_181225_006	2025-12-29	90			PQ	-	90.0	-	H	-	N	89.0													 	2025-12-31		Hưng Yên			
+MS_231225_001	2025-12-29	90			T	-	90.0	-	H	-	N	89.0													 	2025-12-30		Hưng Yên			
+MS_231225_002	2025-12-29	90			X	-	90.0	-	H	-	N	90.0	-												DONE	2025-12-31		Hưng Yên			
+MS_221225_002	2025-12-30	90			T	-	90.0	-	H	-	N	87.0													 	2025-12-31		Hưng Yên			
+MS_241225_001	2026-01-06	90			QX	-	90.0	-	TP	-	N	79.0													 	2026-01-07		Hưng Yên			
+MS_241225_002	2026-01-07	90			X	-	90.0	-	P	-	N	80.0													 	2026-01-08		Hưng Yên			
+MS_241225_004	2026-01-07	90			Q	-	90.0	-	TP	-	N	88.0													 	2026-01-08		Hưng Yên			
+MS_060126_002	2026-01-08	90			TQ	-	90.0	-	TP	-	N	85.0													 	2026-01-09		Hưng Yên			
+MS_060126_001	2026-01-08	90			X	-	90.0	-	TP	-	N	89.0													 	2026-01-09		Hưng Yên			
+MS_050126_001	2026-01-08	90			Q	-	90.0	-	P	-	N	87.0													 	2026-01-12		Hưng Yên			
+MS_241225_003	2026-01-09	90			XT	-	90.0	-	P	-	N	87.0													 	2026-01-12		Hưng Yên			
+MS_060126_003	2026-01-09	90			X	-	90.0	-	P	-	N	87.0													 	2026-01-13		Hưng Yên			
+MS_060126_004	2026-01-10	90			PQ	-	90.0	-	P	-	N	90.0	-												DONE	2026-01-13		Hưng Yên			
+MS_060126_005	2026-01-12	90			T	-	90.0	-	P	-	N	90.0	-												DONE	2026-01-13		Hưng Yên			
+MS_070126_001	2026-01-13	90			Q	-	90.0	-	P	-	N	86.0													 	2026-01-15		Hưng Yên			
+MS_070126_002	2026-01-13	90			X	-	90.0	-	P	-	N	88.0													 	2026-01-15		Hưng Yên			
+MS_100126_001	2026-01-14	90			PX	-	90.0	-	P	-	N	85.0													 	2026-01-16		Hưng Yên			
+MS_100126_002	2026-01-14	90			Q	-	90.0	-	P	-	N	89.0													 	2026-01-16		Hưng Yên			
+MS_120126_001	2026-01-14	90			X	-	90.0	-	P	-	N	87.0													 	2026-01-16		Hưng Yên			
+MS_120126_002	2026-01-15	90			T	-	90.0	-	P	-	N	87.0													 	2026-01-19		Hưng Yên			
+MS_120126_003	2026-01-15	90			X	-	90.0	-	P	-	N	86.0													 	2026-01-20		Hưng Yên			
+MS_140126_003	2026-01-16	90			T	-	90.0	-	H	-	N	83.0													 	2026-01-19		Hưng Yên			
+MS_140126_001	2026-01-17	90			Q	-	90.0	-	P	-	N	88.0													 	2026-01-20		Hưng Yên			
+MS_140126_002	2026-01-17	90			T	-	90.0	-	H	-	N	89.0													 	2026-01-20		Hưng Yên			
+MS_150126_001	2026-01-17	90			P	-	90.0	-	P	-	N	88.0													 	2026-01-21		Hưng Yên			
+MS_150126_002	2026-01-19	90			T	-	90.0	-	P	-	N	83.0													 	2026-01-21		Hưng Yên			
+MS_150126_004	2026-01-19	90			Q	-	90.0	-	P	-	N	87.0													 	2026-01-21		Hưng Yên			
+MS_150126_005	2026-01-20	90			T	-	90.0	-	P	-	N	89.0													 	2026-01-22		Hưng Yên			
+MS_150126_006	2026-01-20	90			Q	-	90.0	-	P	-	N	89.0													 	2026-01-22		Hưng Yên			
+MS_170126_002	2026-01-21	90			QX	-	90.0	-	P	-	N	87.0													 	2026-01-22		Hưng Yên			
+MS_170126_003	2026-01-21	90			QX	-	90.0	-	P	-	N	87.0													 	2026-01-23		Hưng Yên			
+MS_190126_001	2026-01-22	90			QX	-	90.0	-	P	-	N	90.0	-												DONE	2026-01-23		Hưng Yên			
+MS_190126_002	2026-01-23	90			QX	-	90.0	-	P	-	N	87.0													 	2026-01-24		Hưng Yên			
+MS_170126_001	2026-01-23	90			P	-	90.0	-	P	-	N	86.0													 	2026-01-28		Hưng Yên			
+MS_190126_003	2026-01-23	90			P	-	90.0	-	P	-	N	85.0													 	2026-01-28		Hưng Yên			
+MS_210126_001	2026-01-26	90			Q	-	90.0	-	P	-	N	88.0													 	2026-01-29		Hưng Yên			
+MS_210126_002	2026-01-26	90			X	-	90.0	-	P	-	N	89.0													 	2026-01-30		Hưng Yên			
+MS_210126_004	2026-01-27	90			X	-	90.0	-	H	-	N	89.0													 	2026-01-29		Hưng Yên			
+MS_220126_001	2026-01-28	90			Q	-	90.0	-	H	-	N	86.0													 	2026-01-29		Hưng Yên			
+MS_210126_003	2026-01-29	90			X	-	90.0	-	H	-	N	88.0													 	2026-01-30		Hưng Yên			
+MS_260126_001	2026-01-29	90			Q	-	90.0	-	P	-	N	86.0													 	2026-01-30		Hưng Yên			
+MS_220126_002	2026-01-30	90			X	-	90.0	-	H	-	N	89.0													 	2026-02-02		Hưng Yên			
+MS_260126_002	2026-01-30	90			Q	-	90.0	-	P	-	N	89.0													 	2026-02-03		Hưng Yên			
+MS_260126_003	2026-01-30	90			PX	-	90.0	-	P	-	N	88.0													 	2026-02-03		Hưng Yên			
+MS_260126_004	2026-02-02	90			PT	-	90.0	-	P	-	N	88.0													 	2026-02-03		Hưng Yên			
+MS_290126_001	2026-02-02	90			XT	-	90.0	-	P	-	N	90.0	-												DONE	2026-02-04		Tp. HCM			
+MS_290126_002	2026-02-02	90			Q	-	90.0	-	P	-	N	89.0													 	2026-02-04		Tp. HCM			
+MS_020226_001	2026-02-04	90			QTX	-	90.0	-	P	-	N	86.0													 	2026-02-06		Tp. HCM			
+MS_290126_004	2026-02-05	90			QX	-	90.0	-	P	-	N	85.0													 	2026-02-06		Tp. HCM			
+MS_290126_003	2026-02-06	90			QX	-	90.0	-	P	-	N	86.0													 	2026-02-09		Tp. HCM			
+MS_020226_002	2026-02-07	90			X	-	90.0	-	P	-	N	86.0													 	2026-02-11		Tp. HCM			
+MS_280126_003	2026-02-09	90			PQ	-	90.0	-	P	-	N	86.0													 	2026-02-10		Hưng Yên			
+MS_280126_002	2026-02-09	90			T	-	90.0	-	P	-	N	89.0													 	2026-02-10		Hưng Yên			
+MS_020226_003	2026-02-10	90			QX	-	90.0	-	P	-	N	87.0													 	2026-02-11		Tp. HCM			
+MS_020226_004	2026-02-11	90			QX	-	90.0	-	P	-	N	89.0													 	2026-02-12		Tp. HCM			
+MS_070226_001	2026-02-25	90			QX	-	90.0	-	P	-	N	88.0													 	2026-03-02		Tp. HCM			
+MS_280126_001	2026-02-25	90			TQ	-	90.0	-	P	-	N	87.0													 	2026-03-02		Hưng Yên			
+MS_040226_004	2026-02-25	90			PT	-	90.0	-	P	-	N	90.0	-												DONE	2026-03-02		Tp. HCM			
+MS_040226_001	2026-02-28	90			Q	2026-03-02 08:49:33	90.0	2026-03-02 15:29:00	H	2026-03-03 09:39:58.350000	N	89.0													 	2026-03-03		Tp. HCM			
+MS_040226_002	2026-02-28	90			HT	2026-03-02 08:52:33	90.0	2026-03-02 23:44:00	H	2026-03-02 15:24:00	N	85.0													 	2026-03-03		Tp. HCM			
+MS_040226_003	2026-02-28	90			PX	2026-03-02 08:53:33	90.0	2026-03-02 23:24:33	P	2026-03-02 14:25:00	N	89.0													 	2026-03-03		Tp. HCM			
+MS_070226_002	2026-03-04	90			QX	2026-03-04 09:30:43.150000	90.0	2026-03-04 14:38:26.250000	H	2026-03-05 13:44:20.760000	N	88.0													 	2026-03-06		Tp. HCM			
+MS_260226_001	2026-03-04	90			PT	2026-03-04 09:47:16.730000	90.0	2026-03-04 13:22:51.790000	P	2026-03-04 15:58:44.820000															 			Tp. HCM			
+MS_100226_002	2026-03-05	90			X	2026-03-05 09:23:51.400000	90.0	2026-03-05 16:58:14.230000	H	2026-03-06 09:55:44.310000	N	88.0													 	2026-03-06		Tp. HCM			
+MS_100226_003	2026-03-05	90			Q	26/03/05 11:15 AM	90.0	2026-03-06 11:20:32.660000	H	2026-03-06 14:29:10.190000	N	87.0													 	2026-03-06		Tp. HCM			
+MS_100226_001	2026-03-06	90			QX	2026-03-06 11:42:35	90.0	2026-03-09 09:09:06.840000	H	2026-03-09 11:25:57.240000	N	85.0													 	2026-03-10		Tp. HCM			
+MS_100226_004	2026-03-06	90			T	2026-03-06 14:24:37.450000	90.0	2026-03-09 11:01:19.350000	H	2026-03-09 15:30:01.750000	N	87.0													 	2026-03-09		Tp. HCM			
+MS_250226_001	2026-03-09	90			Q	2026-03-09 08:51:16.740000	90.0	2026-03-09 16:02:52.660000	H	2026-03-10 09:05:09.770000	N	88.0													 	2026-03-10		Tp. HCM			
+MS_030326_003	2026-03-09	90			X	2026-03-09 11:44:46.800000	90.0	2026-03-10 10:05:35.790000	H	2026-03-10 13:45:44.420000	N	86.0													 	2026-03-10		Tp. HCM			
+MS_280226_004	2026-03-10	90			Q	2026-03-10 09:24:07.350000	90.0	26/03/10 4:09 PM	H	2026-03-11 11:00:26.090000	N	88.0													 	2026-03-12		Tp. HCM			
+MS_250226_002	2026-03-10	90			X	2026-03-10 10:08:22.760000	90.0	2026-03-10 17:08:45.460000	P	2026-03-11 10:20:55.570000	N	88.0													 	2026-03-12		Tp. HCM			
+MS_030326_004	2026-03-10	90			T	2026-03-10 10:04:27.050000	90.0	2026-03-10 15:24:42.240000	H	2026-03-11 09:30:38.980000	N	88.0													 	2026-03-12		Tp. HCM			
+MS_250226_004	2026-03-11	90			X	2026-03-11 10:52:19.440000	90.0	2026-03-12 11:03:37.310000	P	2026-03-12 11:40:11.960000	N	87.0													 	2026-03-12		Tp. HCM			
+MS_250226_003	2026-03-11	90			Q	26/03/11 10:44 AM	90.0	26/03/12 10:57 AM	H	2026-03-12 15:46:18.820000	N	89.0													 	2026-03-13		Tp. HCM			
+MS_280226_001	2026-03-11	90			T	2026-03-11 11:00:19.960000	90.0	2026-03-11 15:12:49.580000	H	2026-03-12 11:41:11.370000	N	88.0													 	2026-03-13		Tp. HCM			
+MS_280226_003	2026-03-12	90			PQ	2026-03-12 09:21:27.060000	90.0	26/03/12 5:26 PM	H	2026-03-13 10:03:44.870000	N	84.0													 	2026-03-13		Tp. HCM			
+MS_030326_001	2026-03-12	90			X	2026-03-12 09:21:32.070000	90.0	2026-03-12 15:46:10.150000	P	2026-03-12 17:24:36.960000	N	88.0													 	2026-03-13		Tp. HCM			
+MS_280226_002	2026-03-16	90			X	26/03/16 08:52 AM	90.0	2026-03-16 15:39:38.220000	P	2026-03-17 10:25:57.890000	N	86.0													 	2026-03-17		Tp. HCM			
+MS_040326_002	2026-03-13	90			X	2026-03-13 09:08:38.430000	90.0	2026-03-13 17:04:42.600000	P	2026-03-16 11:01:53.290000	N	85.0													 	2026-03-16		Tp. HCM			
+MS_040326_001	2026-03-13	90			Q	2026-03-13 09:30:42.040000	90.0	26/03/13 04:47 PM	H	2026-03-16 13:25:31.240000	N	88.0													 	2026-03-16		Tp. HCM			
+MS_030326_002	2026-03-13	90			T	2026-03-13 09:47:08.230000	90.0	2026-03-13 16:14:00	P	2026-03-16 14:59:32.660000	N	85.0													 	2026-03-17		Tp. HCM			
+MS_060326_001	2026-03-13	90	V001	MS_060326_001_V001	Q	2026-03-16 08:51:54.570000	90.0	26/03/16 03:57 PM	H	2026-03-17 09:12:20.990000	N	88.0													 	2026-03-17		Tp. HCM			
+MS_060326_002	2026-03-13	90	V002	MS_060326_002_V002	T	2026-03-16 08:54:16.130000	90.0	26/03/13 01:51 PM	H	2026-03-16 15:49:40.460000	N	87.0													 	2026-03-16		Tp. HCM			
+MS_060326_004	2026-03-16	90	V003	MS_060326_004_V003	Q	26/03/18 02:10 PM	90.0	2026-03-19 11:55:49.940000	H	2026-03-19 14:40:45.130000	N	90.0	-												DONE	2026-03-23		Tp. HCM			
+MS_090326_001	2026-03-16	90	V004	MS_090326_001_V004	T	2026-03-16 14:32:17.140000	90.0	2026-03-17 09:58:42.560000	H	2026-03-17 11:46:20.320000	N	88.0													 	2026-03-17		Tp. HCM			
+MS_090326_002	2026-03-16	90	V005	MS_090326_002_V005	X	2026-03-16 15:51:01.610000	90.0	26/03/17 02:28 PM 	P	2026-03-18 11:38:08.640000	N	89.0														2026-03-18		Tp. HCM			
+MS_090326_003	2026-03-16	90	V006	MS_090326_003_V006	Q	2026-03-16 16:02:22.300000	90.0	2026-03-17 14:56:50.980000	H	2026-03-18 09:02:55.390000	N	90.0	-												DONE	2026-03-18		Tp. HCM			
+MS_090326_004	2026-03-16	90	V007	MS_090326_004_V007	T	2026-03-17 10:00:42.390000	90.0	2026-03-17 16:33:15.070000	H	2026-03-18 10:19:53.280000	N	90.0	-												DONE	2026-03-18		Tp. HCM			
+MS_100326_001	2026-03-16	90	V008	MS_100326_001_V008	P	2026-03-17 10:31:00	90.0	2026-03-17 15:05:07.700000	P	2026-03-17 17:29:11.680000	N	89.0													 	2026-03-18		Tp. HCM			
+MS_100326_003	2026-03-16	90	V009	MS_100326_003_V009	X	2026-03-17 14:32:01.390000	90.0	2026-03-18 12:01:22.210000	P	2026-03-18 15:00:54.290000	N	88.0													 	2026-03-19		Tp. HCM			
+MS_100326_002	2026-03-16	90	V010	MS_100326_002_V010	Q	26/03/17 3:02 PM	90.0	2026-03-18 14:04:45.810000	H	2026-03-18 17:11:34.280000	N	89.0													 	2026-03-19		Tp. HCM			
+MS_060326_003	2026-03-16	90	V011	MS_060326_003_V011	T	2026-03-17 16:33:27.800000	90.0	2026-03-18 13:30:58.720000	H	2026-03-18 15:22:21.420000	N	88.0													 	2026-03-23		Tp. HCM			
+MS_100326_004	2026-03-17	90	V012	MS_100326_004_V012	X	26/03/18 01:18 PM 	90.0	26/03/19 11:21 AM	P	2026-03-19 15:38:26.490000	N	89.0													 	2026-03-20					
+MS_100326_005	2026-03-17	90	V013	MS_100326_005_V013	T	2026-03-18 14:15:53.160000	90.0	2026-03-18 18:03:26.890000	H	2026-03-19 11:42:13.580000	N	88.0													 	2026-03-20					
+MS_110326_001	2026-03-17	90	V014	MS_110326_001_V014	P	2026-03-18 15:03:38.200000	90.0	2026-03-19 13:25:07.030000	H	2026-03-20 13:45:18.360000	N	87.0													 	2026-03-20					
+MS_110326_002	2026-03-17	90	V015	MS_110326_002_V015	T	2026-03-19 08:34:04.350000	90.0	26/03/19 11:50 PM	H	2026-03-20 09:58:41.290000	N	88.0													 	2026-03-23					
+MS_110326_003	2026-03-18	90	V016	MS_110326_003_V016	X	2026-03-19 10:07:02	90.0	26/03/20 10:03 AM	P	2026-03-20 13:05:55.830000	N	86.0													 	2026-03-24					
+MS_120326_002	2026-03-18	90	V017	MS_120326_002_V017	Q	2026-03-19 10:15:10.330000	90.0	2026-03-20 10:10:33.280000	H	2026-03-20 11:13:22.200000	N	88.0													 	2026-03-24					
+MS_120326_003	2026-03-18	90	V018	MS_120326_003_V018	P	2026-03-19 10:45:19.810000	90.0	2026-03-20 16:04:52.960000	H	2026-03-23 10:10:44.940000	N	85.0													 	2026-03-27					
+MS_120326_004	2026-03-19	90	V019	MS_120326_004_V019	T	2026-03-19 13:04:31.540000	90.0	2026-03-20 09:22:07.260000	P	2026-03-20 10:30:28.280000	N	88.0													 	2026-03-27					
+MS_130326_001	2026-03-19	90	V020	MS_130326_001_V020	T	2026-03-20 09:51:29.510000	90.0	2026-03-20 15:45:30.570000	P	2026-03-23 15:41:22.040000	N	86.0													 	2026-03-27					
+MS_150326_001	2019-03-26	90	V021	MS_150326_001_V021	X	2026-03-20 10:38:09.230000	90.0	2026-03-20 17:17:07	P	2026-03-24 09:23:49.720000	N	88.0													 	2026-03-25					
+MS_130326_002	2019-03-26	90	V022	MS_130326_002_V022	Q	2026-03-20 10:43:58.910000	90.0	2026-03-23 09:37:54.380000	H	2026-03-23 11:07:24.620000	N	84.0													 	2026-03-27					
+MS_150326_002	2026-03-20	90	V023	MS_150326_002_V023	T	2026-03-20 15:45:30.570000	90.0	26/03/23 01:48 PM	H	2026-03-23 15:00:03.920000	N	87.0													 	2026-03-25					
+MS_150326_003	2026-03-20	90	V024	MS_150326_003_V024	X	26/03/23 09:26 AM 	90.0	2026-03-23 15:37:57.910000	P	2026-03-24 10:27:57.120000	N	90.0	-												DONE	2026-03-24					
+MS_160326_001	2026-03-20	90	V025	MS_160326_001_V025	Q	26/03/23 09:45 AM 	90.0	26/03/23 04:30 PM	H	2026-03-24 14:38:51.410000	N	88.0													 	2026-03-24					
+MS_150326_004	2020-03-26	90	V026	MS_150326_004_V026	T	2026-03-23 14:32:13.840000	90.0	2026-03-24 09:39:26.930000	P	2026-03-24 13:54:38.460000	N	87.0													 	2026-03-25					
+MS_160326_002	2023-03-26	90	V027	MS_160326_002_V027	X	2026-03-23 15:49:25.570000	90.0	2026-03-24 14:32:50.230000	P	2026-03-24 16:21:38.640000	N	84.0													 	2026-03-31					
+MS_160326_003	2026-03-23	90	V028	MS_160326_003_V028	Q	2026-03-24 08:45:00	90.0	2026-03-24 14:59:31.130000	H	2026-03-24 16:01:38.050000	N	88.0													 	2026-03-25					
+MS_160326_004	2023-03-26	90	V029	MS_160326_004_V029	T	2026-03-24 09:39:36.750000	90.0	26/03/24 02:42 PM	P	2026-03-25 08:57:01.100000	N	90.0	-												DONE	2026-03-31					
+MS_170326_001	2026-03-23	90	V030	MS_170326_001_V030	P	2026-03-24 13:55:42.290000	90.0	2026-03-26 14:44:28.340000	H	2026-03-26 16:39:52.550000	N	90.0	-												DONE	2026-03-31					
+MS_120326_001	2026-03-23	90	V031	MS_120326_001_V031	H	2026-03-24 14:42:52.050000	90.0	2026-03-25 13:55:10	P	2026-03-25 15:48:23.170000	N	88.0													 	2026-03-25					
+MS_170326_002	2026-03-23	90	V032	MS_170326_002_V032	X	2026-03-24 14:52:53.330000	90.0	2026-03-25 13:46:09.660000	P	2026-03-25 17:00:29.470000	N	85.0													 	2026-03-31					
+MS_170326_003	2026-03-23	90	V033	MS_170326_003_V033	T	2026-03-24 14:58:09.830000	90.0	26/03/25 11:47 AM	H	2026-03-25 16:44:34.440000	N	89.0													 	2026-03-31					
+MS_170326_004	2026-03-23	90	V034	MS_170326_004_V034	Q	2026-03-24 15:10:00	90.0	26/03/25 11:44 AM	H	2026-03-25 15:15:55.030000	N	87.0													 	2026-03-31					
+MS_180326_001	2026-03-23	90	V035	MS_180326_001_V035	T	2026-03-25 11:05:42.270000	90.0	26/03/25 05:23 PM	H	2026-03-26 09:47:30.590000	N	89.0													 	2026-03-31					
+MS_180326_002	2026-03-23	90	V036	MS_180326_002_V036	Q	2026-03-25 11:45:08	90.0	2026-03-26 10:12:56.790000	H	2026-03-26 11:29:14.620000	N	86.0													 	2026-03-31					
+MS_190326_001	2026-03-24	90	V037	MS_190326_001_V037	X	2026-03-25 13:59:39.070000	90.0	2026-03-26 10:50:22.860000	P	2026-03-26 17:16:07.840000	N	84.0													 	2026-03-31					
+MS_190326_002	2026-03-24	90	V038	MS_190326_002_V038	T	2026-03-26 08:55:38.720000	90.0	2026-03-26 13:47:33.960000	H	2026-03-26 15:38:37.500000	N	89.0													 	2026-03-31					
+MS_190326_003	2026-03-24	90	V039	MS_190326_003_V039	H	2026-03-26 09:49:31.070000	90.0	2026-03-30 13:56:46.650000	P	2026-03-30 16:19:13.920000	N	85.0													 	2026-03-31					
+MS_190326_004	2026-03-25	90	V040	MS_190326_004_V040	Q	2026-03-26 10:27:36.480000	90.0	2026-03-26 17:30:00	H	2026-03-27 10:57:52.440000	N	90.0	-												DONE	2026-04-03					
+MS_200326_001	2026-03-26	90	V041	MS_200326_001_V041	X	2026-03-26 10:55:31.090000	90.0	2026-03-27 09:31:04.600000	P	2026-03-27 14:02:04.020000	N	88.0													 	2026-04-03					
+MS_200326_003	2026-03-26	90	V042	MS_200326_003_V042	T	2026-03-26 13:50:13.340000	90.0	2026-03-27 11:28:43.570000	P	2026-03-30 10:16:16.810000	N	88.0													 	2026-04-03					
+MS_200326_004	2026-03-26	90	V043	MS_200326_004_V043	P	2026-03-26 17:18:59.060000	90.0	2026-03-31 09:39:04.220000	H	2026-03-31 11:06:40.140000	N	89.0													 	2026-04-03					
+MS_200326_002	2026-03-27	90	V044	MS_200326_002_V044	T	26/03/27 1:05 PM	90.0	26/03/30 11:44 PM	P	2026-03-30 14:33:25.410000	N	86.0													 	2026-04-03					
+MS_200326_005	2026-03-27	90	V045	MS_200326_005_V045	X	2026-03-27 09:45:20.280000	90.0	2026-03-27 16:39:16.800000	P	2026-04-01 13:10:32.670000	N	89.0													 	2026-04-03					
+MS_200326_006	2026-03-27	90	V046	MS_200326_006_V046	X	2026-03-30 08:50:56.640000	90.0	2026-03-30 15:04:12.930000	H	2026-03-30 16:27:13.720000	N	89.0													 	2026-04-03					
+MS_230326_001	2026-03-27	90	V047	MS_230326_001_V047	Q	2026-03-30 08:57:38.940000	90.0	2026-03-30 16:15:00	P	2026-03-31 11:46:50.970000	N	86.0													 	2026-04-08					
+MS_230326_002	2026-03-30	90	V048	MS_230326_002_V048	T	2026-03-30 11:53:11.510000	90.0	26/03/30 05:35 PM	P	2026-03-31 14:10:06.700000	N	86.0													 	2026-04-03					
+MS_230326_003	2026-03-30	90	V049	MS_230326_003_V049	H	2026-03-30 14:17:01.860000	90.0	2026-04-01 13:53:03	P	2026-04-01 16:47:44.700000	N	90.0	-												DONE	2026-04-03					
+MS_230326_004	2026-03-30	90	V050	MS_230326_004_V050	X	2026-03-30 15:16:06.340000	90.0	2026-03-31 13:16:03.200000	H	2026-03-31 14:44:20.300000	N	88.0													 	2026-04-03					
+MS_230326_005	2026-03-30	90	V051	MS_230326_005_V051	Q	2026-03-30 16:27:00	90.0	26/03/31 02:15 PM	P	2026-03-31 16:33:21.490000	N	86.0													 	2026-04-05					
+MS_230326_006	2030-03-26	90	V052	MS_230326_006_V052	T	2026-03-31 09:01:40.940000	90.0	2026-03-31 14:33:15.750000	H	2026-03-31 16:21:32.570000	N	89.0													 	2026-04-03					
+MS_240326_001	2026-03-30	90	V053	MS_240326_001_V053	T	2026-03-31 14:36:49.770000	90.0	26/04/01 11:49 AM	P	2026-04-02 09:42:22.770000	N	87.0													 	2026-04-08					
+MS_240326_002	2026-03-30	90	V054	MS_240326_002_V054	X	2026-03-31 13:23:08.680000	90.0	2026-04-01 10:39:30.650000	H	2026-04-01 15:01:50.400000	N	84.0													 	2026-04-03					
+MS_240326_003	2026-03-30	90	V055	MS_240326_003_V055	Q	2026-03-31 14:56:18.630000	90.0	2026-04-01 13:48:07.570000	P	2026-04-02 09:41:50.910000	N	88.0													 	2026-04-08					
+MS_240326_004	2026-03-30	90	V056	MS_240326_004_V056	QX	2026-04-03 13:00:00	90.0	26/04/03 05:28 PM	P	2026-04-04 14:49:42.680000	N	90.0	-												DONE	2026-04-05					
+MS_240326_005	2030-03-26	90	V057	MS_240326_005_V057	T	2026-04-01 11:58:16.950000	90.0	2026-04-01 16:51:16.170000	P	2026-04-02 11:08:00.220000	N	89.0													 	2026-04-05					
+MS_240326_006	2026-03-31	90	V058	MS_240326_006_V058	X	26/04/01 10:50 AM	90.0	2026-04-02 09:09:02.790000	H	2026-04-02 10:03:40.230000	N	90.0	-												DONE	2026-04-05					
+MS_260326_001	2026-03-31	90	V059	MS_260326_001_V059	Q	2026-04-01 13:50:36.130000	90.0	2026-04-02 11:08:00.220000	P	2026-04-02 13:39:18.400000	N	90.0	-												DONE	2026-04-05					
+MS_260326_002	2026-04-01	90	V060	MS_260326_002_V060	T	2026-04-02 08:42:18.870000	90.0	2026-04-02 12:00:56.670000	P	2026-04-03 10:16:52.260000	N	88.0													 	2026-04-05					
+MS_260326_003	2026-04-01	90	V061	MS_260326_003_V061	X	2026-04-02 09:11:02.260000	90.0	2026-04-02 16:03:53.740000	H	2026-04-03 11:30:51.800000	N	88.0													 	2026-04-05					
+MS_260326_004	2026-04-01	90	V062	MS_260326_004_V062	Q	2026-04-02 13:05:09.150000	90.0	2026-04-03 11:21:04.670000	P	2026-04-03 13:34:19.030000	N	89.0													 	2026-04-05					
+MS_260326_005	2026-04-02	90	V063	MS_260326_005_V063	T	2026-04-02 11:30:06.440000	90.0	2026-04-02 17:21:48.790000	P	2026-04-03 11:32:32.240000	N	90.0	-												DONE	2026-04-05					
+MS_260326_006	2026-04-02	90	V064	MS_260326_006_V064	X	2026-04-02 16:44:02.830000	90.0	2026-04-03 14:25:50.850000	P	2026-04-03 16:27:27.050000	N	89.0													 	2026-04-08					
+MS_280326_001	2026-04-02	90	V065	MS_280326_001_V065	T	2026-04-03 09:21:07.300000	90.0	2026-04-03 16:04:32.210000	P	2026-04-04 13:51:31.580000	N	88.0													 	2026-04-05					
+MS_280326_002	2003-04-26	90	V066	MS_280326_002_V066	Q	26/04/04 9:00 AM	90.0	26/04/04 5:27 PM	P	2026-04-06 13:50:19.990000	N	90.0	-												DONE	2026-04-08					
+MS_280326_003	2026-04-03	90	V067	MS_280326_003_V067	T	2026-04-04 08:53:24.620000	90.0	2026-04-04 14:40:47.400000	P	2026-04-06 10:52:43	N	90.0	-												DONE	2026-04-08					
+MS_280326_004	2026-04-03	90	V068	MS_280326_004_V068	Q	26/04/06 08:35 AM	90.0	2026-04-06 16:20:32.320000	P	26/04/07 11:05 AM	N														 						
+MS_290326_001	2003-04-26	90	V069	MS_290326_001_V069	X	2026-04-06 08:55:27.530000	90.0	2026-04-06 14:44:56.020000	P	2026-04-06 16:28:39.250000	N														 						
+MS_010426_001	2026-04-06	89	V070	MS_010426_001_V070	T	26/04/06 01:00 PM	89.0	2026-04-06 16:39:42.910000	P	2026-04-06 17:32:58.980000	N	87.0														2026-04-07					
+MS_290326_002	2026-04-06	90	V071	MS_290326_002_V071	X	26/04/06 02:54 PM 	90.0	2026-04-07 13:57:57.740000	P	2026-04-07 16:34:26.930000	N																				
+MS_290326_003	2026-04-06	90	V072	MS_290326_003_V072	Q	26/04/06 04:45 PM	90.0	2026-04-07 15:02:23.890000	P	2026-04-08 08:58:04.780000	N																				
+MS_300326_003	2026-04-06	90	V073	MS_300326_003_V073	T	2026-04-06 16:43:11.400000	90.0	2026-04-08 15:20:38.990000																							
+MS_300326_004	2006-04-26	90	V074	MS_300326_004_V074	T	26/04/07 01:00 PM	90.0	2026-04-07 17:34:11.410000	P	2026-04-08 10:39:08.780000	N																				
+MS_310326_001	2026-04-06	90	V075	MS_310326_001_V075	X	2026-04-07 14:32:42.120000	90.0	2026-04-08 11:18:00.580000	P	2026-04-09 09:52:18.520000	N																				
+MS_300326_001	2026-04-07	90	V076	MS_300326_001_V076	Q	2026-04-07 16:23:22.210000	90.0	2026-04-08 15:20:43.100000	P	2026-04-09 14:16:38.310000	N																				
+MS_310326_002	2026-04-07	90	V077	MS_310326_002_V077	T	2026-04-08 14:58:56.530000	90.0	26/04/09 11:50 PM	H	2026-04-09 14:22:28.950000	N																				
+MS_310326_003	2026-04-08	90	V078	MS_310326_003_V078	X	2026-04-08 11:29:56.460000	90.0	2026-04-09 10:34:04.580000	P	2026-04-09 16:51:41.770000																					
+MS_310326_004	2026-04-08	90	V079	MS_310326_004_V079	X	2026-04-09 10:46:09.930000	90.0	2026-04-10 09:46:31.140000																							
+mtDNA_20260407_mtDNA_315	2026-04-08	16	V080	20260407_mtDNA_315_V080	T	26/04/08 10:20 AM	90.0	2026-04-08 11:18:12.500000	P	2026-04-08 12:02:48.680000	N	15.0														2026-04-08					
+MS_300326_002	2008-04-26	90	V081	MS_300326_002_V081	Q	26/04/08 04:04 PM	90.0	26/04/09 2:30 PM	P	2026-04-10 14:45:44.060000	N																				
+MS_040426_001	2008-04-26	90	V082	MS_040426_001_V082	PT	26/04/08 01:00 PM	90.0	2026-04-08 15:19:07.490000	P	2026-04-08 16:35:48.930000	N	85.0														2026-04-08					
+MS_310326_005	2008-04-26	90	V083	MS_310326_005_V083	T	2026-04-09 13:21:43.160000	90.0	2026-04-09 17:30:05.350000																							
+MS_310326_006	2026-04-09	90	V084	MS_310326_006_V084	Q	2026-04-09 15:32:01.200000	90.0	2026-04-10 13:52:48.760000																							
+MS_030426_001	2026-04-09	90	V085	MS_030426_001_V085	T	2026-04-10 09:44:37.200000	90.0	2026-04-10 16:15:07.890000																							
+MS_030426_002	2026-04-09	90	V086	MS_030426_002_V086	X	2026-04-10 10:17:29.570000																									
+mtDNA_nan		90	V087	_V087																											
+mtDNA_nan		90	V088	_V088																											
+mtDNA_nan		90	V089	_V089																											
+mtDNA_nan		90	V090	_V090																											
+mtDNA_nan		90	V091	_V091																											
+mtDNA_nan		90	V092	_V092																											
+mtDNA_nan		90	V093	_V093																											
+mtDNA_nan		90	V094	_V094																											
+mtDNA_nan		90	V095	_V095																											
+mtDNA_nan		90	V096	_V096																											
+mtDNA_nan		90	V097	_V097																											
+mtDNA_nan		90	V098	_V098																											
+mtDNA_nan		90	V099	_V099																											

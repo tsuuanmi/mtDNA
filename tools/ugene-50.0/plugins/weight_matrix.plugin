@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<ugene-plugin id="weight_matrix" version="50.0" ugene-version="50.0" qt-version="5.15.6"    >
+    <name>Weight matrix</name>
+    <plugin-vendor>Unipro</plugin-vendor>
+    <plugin-mode>console,ui</plugin-mode>
+    <library>libweight_matrix.so</library>
+    <platform name="unix" arch="64"/>
+</ugene-plugin>

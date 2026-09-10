@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<ugene-plugin id="biostruct3d_view" version="50.0" ugene-version="50.0" qt-version="5.15.6"    >
+    <name>3D structure viewer</name>
+    <plugin-vendor>Unipro</plugin-vendor>
+    <plugin-mode>ui</plugin-mode>
+    <library>libbiostruct3d_view.so</library>
+    <platform name="unix" arch="64"/>
+</ugene-plugin>

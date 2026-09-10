@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sổ tay mtDNA Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  /* ---------------------------------------------------------------
+     Bảng màu lấy từ chính đối tượng: bốn base trên chromatogram —
+     A xanh lá, C xanh mòng két, G đen, T đỏ. Nền lệch nhẹ về xanh lá
+     để không phải là xám vô danh.
+     --------------------------------------------------------------- */
+  :root{
+    color-scheme: light;
+    --paper:#F4F7F5;  --panel:#FFFFFF;  --panel-2:#EDF2EF;
+    --ink:#131A19;    --ink-2:#3C4B48;  --ink-3:#6B7B77;
+    --rule:#D9E2DD;   --rule-2:#C3D0CB;
+    --accent:#0E6F63; --accent-ink:#FFFFFF; --accent-soft:#E2F0ED; --accent-line:#9CCCC4;
+    --ok:#2E7D32;     --ok-soft:#E7F2E8;   --ok-line:#B3D6B5;
+    --warn:#9A5B00;   --warn-soft:#FBF0DE; --warn-line:#E3C894;
+    --err:#A6231C;    --err-soft:#FBEAE9;  --err-line:#E8B4B0;
+    --code-bg:#EDF2EF; --code-ink:#20302D;
+    --shadow:0 1px 2px rgba(19,26,25,.06), 0 8px 24px -18px rgba(19,26,25,.35);
+
+    --serif:"Lora", Georgia, "Times New Roman", serif;
+    --sans:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#0C1413;  --panel:#131C1A;  --panel-2:#182322;
+      --ink:#E2EBE8;    --ink-2:#B0C0BC;  --ink-3:#7F918D;
+      --rule:#25322F;   --rule-2:#33433F;
+      --accent:#4CC0AF; --accent-ink:#062320; --accent-soft:#122E2A; --accent-line:#245A53;
+      --ok:#69C46E;     --ok-soft:#14291A;   --ok-line:#2C5330;
+      --warn:#D69A3D;   --warn-soft:#2B2113; --warn-line:#54401F;
+      --err:#E58079;    --err-soft:#2C1817;  --err-line:#572A27;
+      --code-bg:#0A100F; --code-ink:#BCCCC8;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -18px rgba(0,0,0,.9);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0C1413;  --panel:#131C1A;  --panel-2:#182322;
+    --ink:#E2EBE8;    --ink-2:#B0C0BC;  --ink-3:#7F918D;
+    --rule:#25322F;   --rule-2:#33433F;
+    --accent:#4CC0AF; --accent-ink:#062320; --accent-soft:#122E2A; --accent-line:#245A53;
+    --ok:#69C46E;     --ok-soft:#14291A;   --ok-line:#2C5330;
+    --warn:#D69A3D;   --warn-soft:#2B2113; --warn-line:#54401F;
+    --err:#E58079;    --err-soft:#2C1817;  --err-line:#572A27;
+    --code-bg:#0A100F; --code-ink:#BCCCC8;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -18px rgba(0,0,0,.9);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-weight:400; font-size:16.5px; line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:1060px; margin:0 auto; padding:0 24px 96px}
+  .prose{max-width:70ch}
+
+  /* ---------- mở đầu ---------- */
+  .mast{padding:64px 0 40px; border-bottom:1px solid var(--rule)}
+  .eyebrow{
+    font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); font-weight:600; margin:0 0 16px;
+  }
+  h1{
+    font-family:var(--serif); font-weight:600; font-size:clamp(34px,5vw,50px);
+    line-height:1.1; margin:0 0 18px; text-wrap:balance; letter-spacing:-.015em;
+  }
+  .lede{font-size:18.5px; color:var(--ink-2); max-width:62ch; margin:0}
+
+  .addr{
+    display:flex; flex-wrap:wrap; gap:10px 28px; align-items:baseline;
+    margin-top:32px; padding:18px 22px; border-radius:10px;
+    background:var(--accent-soft); border:1px solid var(--accent-line);
+  }
+  .addr b{font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-2); font-weight:600}
+  .addr code{font-family:var(--mono); font-size:16px; font-weight:500; color:var(--accent)}
+
+  /* ---------- mục lục ---------- */
+  nav.toc{margin:40px 0 8px; padding:22px 0 26px; border-bottom:1px solid var(--rule)}
+  nav.toc h2{
+    font-family:var(--sans); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:600; margin:0 0 14px;
+  }
+  nav.toc ol{
+    list-style:none; margin:0; padding:0; display:grid; gap:6px 32px;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); counter-reset:toc;
+  }
+  nav.toc a{
+    display:flex; gap:12px; color:var(--ink-2); text-decoration:none;
+    padding:5px 0; font-size:15px; border-radius:5px;
+  }
+  nav.toc a::before{
+    counter-increment:toc; content:counter(toc,decimal-leading-zero);
+    font-family:var(--mono); font-size:12.5px; color:var(--accent);
+    font-weight:500; padding-top:2px; font-variant-numeric:tabular-nums;
+  }
+  nav.toc a:hover{color:var(--accent)}
+  nav.toc a:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+  /* ---------- mục ---------- */
+  section{padding-top:56px; counter-increment:sec}
+  section > h2{
+    font-family:var(--serif); font-weight:600; font-size:clamp(25px,3vw,31px);
+    line-height:1.22; margin:0 0 8px; text-wrap:balance; letter-spacing:-.01em;
+    display:flex; gap:16px; align-items:baseline;
+  }
+  section > h2::before{
+    content:counter(sec,decimal-leading-zero);
+    font-family:var(--mono); font-size:14px; font-weight:500; color:var(--accent);
+    flex:0 0 auto; padding-top:4px; font-variant-numeric:tabular-nums;
+  }
+  .page{counter-reset:sec}
+  section > .sub{color:var(--ink-3); margin:0 0 24px 39px; max-width:62ch; font-size:15.5px}
+  section > *:not(h2):not(.sub){margin-left:39px}
+  @media (max-width:640px){
+    section > h2{gap:11px}
+    section > .sub, section > *:not(h2):not(.sub){margin-left:0}
+  }
+
+  p{margin:0 0 16px}
+  h3{
+    font-family:var(--sans); font-size:15px; font-weight:600; margin:30px 0 10px;
+    letter-spacing:.005em;
+  }
+  strong{font-weight:600}
+  a{color:var(--accent)}
+  code{
+    font-family:var(--mono); font-size:.88em; background:var(--code-bg);
+    color:var(--code-ink); padding:.15em .4em; border-radius:4px;
+    border:1px solid var(--rule);
+  }
+  pre{
+    font-family:var(--mono); font-size:13.5px; line-height:1.62;
+    background:var(--code-bg); color:var(--code-ink); border:1px solid var(--rule);
+    border-radius:9px; padding:16px 18px; overflow-x:auto; margin:0 0 18px;
+  }
+  pre code{background:none; border:0; padding:0; font-size:inherit}
+
+  /* ---------- bảng ---------- */
+  .tw{overflow-x:auto; margin:0 0 20px; border:1px solid var(--rule); border-radius:10px; background:var(--panel)}
+  table{border-collapse:collapse; width:100%; font-size:14.5px}
+  th,td{text-align:left; padding:11px 16px; vertical-align:top; border-bottom:1px solid var(--rule)}
+  thead th{
+    font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
+    font-weight:600; background:var(--panel-2); white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:0}
+  td code{font-size:13px; white-space:nowrap}
+  .num{font-variant-numeric:tabular-nums; font-family:var(--mono); font-size:13px}
+
+  /* ---------- chip ---------- */
+  .chip{
+    display:inline-block; font-size:11.5px; font-weight:600; letter-spacing:.04em;
+    padding:2px 9px; border-radius:100px; white-space:nowrap;
+    border:1px solid var(--rule-2); background:var(--panel-2); color:var(--ink-2);
+  }
+  .chip.ok{background:var(--ok-soft); border-color:var(--ok-line); color:var(--ok)}
+  .chip.warn{background:var(--warn-soft); border-color:var(--warn-line); color:var(--warn)}
+  .chip.err{background:var(--err-soft); border-color:var(--err-line); color:var(--err)}
+  .chip.acc{background:var(--accent-soft); border-color:var(--accent-line); color:var(--accent)}
+
+  /* ---------- hộp lưu ý ---------- */
+  .note{
+    border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:14px 18px; border-radius:0 8px 8px 0; margin:0 0 20px; font-size:15px;
+  }
+  .note.warn{border-left-color:var(--warn); background:var(--warn-soft)}
+  .note.err{border-left-color:var(--err); background:var(--err-soft)}
+  .note p:last-child{margin-bottom:0}
+  .note b{font-weight:600}
+
+  /* ---------- thẻ giải thích biểu tượng ---------- */
+  .legend{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); margin:0 0 20px}
+  .lg{
+    display:flex; gap:13px; align-items:flex-start; padding:13px 15px;
+    border:1px solid var(--rule); border-radius:9px; background:var(--panel);
+  }
+  .lg .ic{
+    font-family:var(--mono); font-size:17px; line-height:1.35; flex:0 0 auto;
+    width:22px; text-align:center; color:var(--ink-3);
+  }
+  .lg.run .ic{color:var(--accent)} .lg.done .ic{color:var(--ok)} .lg.fail .ic{color:var(--err)}
+  .lg b{display:block; font-size:14.5px; font-weight:600}
+  .lg small{color:var(--ink-3); font-size:13px; line-height:1.5; display:block}
+
+  /* ---------- danh sách bước nhỏ ---------- */
+  ol.steps{counter-reset:st; list-style:none; margin:0 0 20px; padding:0; display:grid; gap:14px}
+  ol.steps li{display:flex; gap:14px}
+  ol.steps li::before{
+    counter-increment:st; content:counter(st);
+    flex:0 0 25px; height:25px; border-radius:50%; margin-top:2px;
+    background:var(--accent); color:var(--accent-ink);
+    font-family:var(--mono); font-size:12.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  ol.steps li > div{flex:1; min-width:0}
+  ol.steps b{display:block; font-weight:600; margin-bottom:2px}
+  ol.steps small{color:var(--ink-2); font-size:14.5px; line-height:1.6; display:block}
+
+  ul.plain{margin:0 0 18px; padding-left:20px}
+  ul.plain li{margin-bottom:7px}
+
+  footer{
+    margin-top:80px; padding-top:26px; border-top:1px solid var(--rule);
+    color:var(--ink-3); font-size:13.5px;
+  }
+  footer code{font-size:12.5px}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+
+
+<div class="page">
+
+  <header class="mast">
+    <p class="eyebrow">Quy trình vận hành · Phòng xét nghiệm mtDNA</p>
+    <h1>Sổ tay chạy pipeline trên web</h1>
+    <p class="lede">
+      Toàn bộ các bước từ lúc mở trang tới lúc kết quả lên Google Sheet, kèm cách
+      đọc khi một batch báo hỏng. Không cần biết dòng lệnh.
+    </p>
+    <div class="addr">
+      <span><b>Địa chỉ</b> &nbsp; <code>http://192.168.1.203:8765</code></span>
+      <span><b>Mở bằng</b> &nbsp; <code>Chrome / Edge</code></span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Mục lục">
+    <h2>Nội dung</h2>
+    <ol>
+      <li><a href="#mo">Mở trang</a></li>
+      <li><a href="#khoi">Bốn khối trên màn hình</a></li>
+      <li><a href="#quytrinh">Chọn quy trình</a></li>
+      <li><a href="#batch">Nhập mã batch</a></li>
+      <li><a href="#soat">Soát lại trước khi chạy</a></li>
+      <li><a href="#theodoi">Theo dõi tiến độ</a></li>
+      <li><a href="#songsong">Nhiều người cùng chạy</a></li>
+      <li><a href="#sheet">Kết quả vào sheet nào</a></li>
+      <li><a href="#loi">Khi một batch báo hỏng</a></li>
+      <li><a href="#server">Khởi động lại máy chủ</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <section id="mo">
+    <h2>Mở trang</h2>
+    <p class="sub">Trang chạy trong mạng nội bộ, không cần tài khoản, không cần cài gì.</p>
+
+    <p>Mở trình duyệt và vào <code>http://192.168.1.203:8765</code>. Nếu bạn ngồi
+    ngay máy chủ thì <code>http://localhost:8765</code> cũng vào được.</p>
+
+    <div class="note">
+      <p>Trang không hiện ra thì gần như chắc là <b>máy chủ chưa bật</b>, không phải máy
+      bạn có vấn đề. Xem mục <a href="#server">Khởi động lại máy chủ</a>.</p>
+    </div>
+
+    <p>Góc trên bên phải có nút <span class="chip">☾</span> để đổi giữa nền sáng và
+    nền tối. Lựa chọn được nhớ lại cho lần sau, riêng từng máy.</p>
+  </section>
+
+  <!-- 2 -->
+  <section id="khoi">
+    <h2>Bốn khối trên màn hình</h2>
+    <p class="sub">Form chia làm bốn khối, đọc từ trái sang phải là đúng thứ tự cần điền.</p>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Khối</th><th>Dùng để</th><th>Thường phải sửa không</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Quy trình</b></td>
+            <td>Chọn một trong năm kịch bản dựng sẵn. Bấm vào là tự điền hết các khối còn lại.</td>
+            <td><span class="chip acc">Luôn bấm</span></td>
+          </tr>
+          <tr>
+            <td><b>Các bước chạy</b></td>
+            <td>Sáu bước của pipeline, tích chọn bước nào chạy.</td>
+            <td><span class="chip">Hiếm khi</span></td>
+          </tr>
+          <tr>
+            <td><b>Batch</b></td>
+            <td>Danh sách mã batch, mỗi dòng một mã.</td>
+            <td><span class="chip acc">Luôn nhập</span></td>
+          </tr>
+          <tr>
+            <td><b>Cấu hình</b></td>
+            <td>Người chạy, engine, thư mục nguồn, thư mục kết quả, sheet.</td>
+            <td><span class="chip">Chỉ tên người</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Sáu bước là gì</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:52px">Bước</th><th>Tên</th><th>Làm gì</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>Validate</td><td>Kiểm tra Positive Control</td></tr>
+          <tr><td class="num">2</td><td>Prepare</td><td>Gom file AB1 và trích danh sách mẫu từ file Excel</td></tr>
+          <tr><td class="num">3</td><td>Automate</td><td>Chạy engine phân tích — tracy hoặc blastn</td></tr>
+          <tr><td class="num">4</td><td>Manual</td><td>Đọc kết quả Sequencher rồi so sánh với máy</td></tr>
+          <tr><td class="num">5</td><td>FASTA</td><td>Xuất file FASTA</td></tr>
+          <tr><td class="num">6</td><td>Report</td><td>Sinh báo cáo PDF</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="quytrinh">
+    <h2>Chọn quy trình</h2>
+    <p class="sub">Năm kịch bản dựng sẵn, phủ gần hết việc hằng ngày. Bấm một cái là xong phần cấu hình.</p>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Quy trình</th><th>Khi nào dùng</th><th>Bước</th><th>Engine</th><th>Sheet</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Automate + compare</b></td>
+            <td>Việc thường quy: chạy máy rồi so với manual.</td>
+            <td class="num">2,3,4</td><td class="num">tracy</td>
+            <td><span class="chip ok">chính</span></td>
+          </tr>
+          <tr>
+            <td><b>Compare lại</b></td>
+            <td>Manual vừa sửa kết quả, chỉ cần so lại. Không chạy lại máy nên rất nhanh.</td>
+            <td class="num">4</td><td class="num">tracy</td>
+            <td><span class="chip ok">chính</span></td>
+          </tr>
+          <tr>
+            <td><b>Xuất FASTA</b></td>
+            <td>Chỉ cần file FASTA.</td>
+            <td class="num">5</td><td class="num">tracy</td>
+            <td><span class="chip">không ghi</span></td>
+          </tr>
+          <tr>
+            <td><b>Rerun</b></td>
+            <td>Chạy lại các mẫu lỗi lấy từ ZIP trong thư mục rerun.</td>
+            <td class="num">3,4</td><td class="num">blastn</td>
+            <td><span class="chip warn">rerun</span></td>
+          </tr>
+          <tr>
+            <td><b>Training</b></td>
+            <td>Chạy trên dữ liệu training.</td>
+            <td class="num">2,3,4</td><td class="num">tracy</td>
+            <td><span class="chip warn">training</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note warn">
+      <p><b>Ba sheet là ba sổ khác nhau.</b> Sheet chính, sheet training và sheet rerun
+      không dùng chung. Chọn đúng quy trình thì sheet tự đúng theo — đừng sửa tay
+      ô sheet trừ khi biết rõ mình đang làm gì.</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="batch">
+    <h2>Nhập mã batch</h2>
+    <p class="sub">Mỗi dòng một mã. Dán thẳng từ Excel cũng được.</p>
+
+<pre><code>MS_130826_010
+MS_130826_011
+20260628_mtDNA_499</code></pre>
+
+    <p>Mã batch phải trùng <b>đúng</b> tên thư mục dữ liệu thô. Gõ thiếu hoặc sai một
+    ký tự thì hệ thống báo không tìm thấy chứ không tự đoán.</p>
+
+    <div class="note">
+      <p><b>Rerun thì mã batch lấy theo ngày của batch gốc</b>, không phải ngày chạy lại.
+      Tên file ZIP đôi khi mang ngày rerun — đó là chỗ hay nhầm nhất. Nếu ZIP tên
+      <code>20260731_mtDNA_498…</code> mà batch gốc là <code>20260628_mtDNA_498</code>
+      thì phải nhập mã batch gốc.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="soat">
+    <h2>Soát lại trước khi chạy</h2>
+    <p class="sub">Thanh dưới cùng màn hình luôn hiện những gì sắp xảy ra. Đọc nó là tránh được gần hết sự cố.</p>
+
+    <p>Ngay khi nhập xong mã batch, hệ thống tự đi kiểm tra dữ liệu và hiện lên:</p>
+
+    <ul class="plain">
+      <li>Có bao nhiêu file AB1 tìm được cho từng batch</li>
+      <li>Có file ZIP Sequencher tương ứng không, và <b>bao nhiêu cái</b></li>
+      <li>Có file Excel danh sách mẫu không</li>
+      <li>Kết quả sẽ ghi vào sheet nào, có upload hay không</li>
+    </ul>
+
+    <div class="note err">
+      <p><b>Thấy một batch có hai file ZIP thì dừng lại hỏi trước khi chạy.</b>
+      Hai ZIP chứa cùng một mẫu là nguyên nhân số một khiến batch hỏng: hệ thống
+      không biết chọn bản phân tích nào nên loại cả hai. Xem mục
+      <a href="#loi">Khi một batch báo hỏng</a>.</p>
+    </div>
+
+    <p>Ô <b>Người chạy</b> chọn tên mình trong danh sách. Không phải thủ tục cho vui —
+    khi hai người lỡ chọn trùng batch, hệ thống sẽ báo tên người đang giữ batch đó.</p>
+  </section>
+
+  <!-- 6 -->
+  <section id="theodoi">
+    <h2>Theo dõi tiến độ</h2>
+    <p class="sub">Bấm Chạy là chuyển sang màn hình danh sách các bước, tự cập nhật.</p>
+
+    <div class="legend">
+      <div class="lg"><span class="ic">○</span><div><b>Đang chờ</b><small>Chưa tới lượt</small></div></div>
+      <div class="lg run"><span class="ic">◐</span><div><b>Đang chạy</b><small>Bước hiện tại</small></div></div>
+      <div class="lg done"><span class="ic">✓</span><div><b>Xong</b><small>Đã hoàn thành</small></div></div>
+      <div class="lg"><span class="ic">—</span><div><b>Bỏ qua</b><small>Không nằm trong các bước đã chọn</small></div></div>
+      <div class="lg fail"><span class="ic">✕</span><div><b>Hỏng</b><small>Dừng ở bước này</small></div></div>
+    </div>
+
+    <p>Cảnh báo trong lúc chạy được gom vào mục riêng phía dưới. Muốn xem log đầy đủ
+    thì mở phần <b>Chi tiết</b> ở cuối trang.</p>
+
+    <div class="note">
+      <p><b>Tắt trình duyệt không làm dừng công việc.</b> Mở lại trang là nó bám lại
+      đúng lượt đang chạy. Muốn dừng thật thì phải bấm nút <b>Dừng</b>.</p>
+    </div>
+
+    <p>Một batch 90 mẫu chạy đủ bước 2, 3, 4 mất khoảng <b>4 tới 5 phút</b>. Riêng
+    bước 2 gom file AB1 từ ổ mạng nên có thể im lặng một lúc — đó là bình thường.</p>
+  </section>
+
+  <!-- 7 -->
+  <section id="songsong">
+    <h2>Nhiều người cùng chạy</h2>
+    <p class="sub">Hệ thống chịu được nhiều người chạy cùng lúc. Chỉ có một luật cần nhớ.</p>
+
+    <div class="note warn">
+      <p><b>Không hai lượt nào được chạy trùng mã batch.</b> Batch khác nhau thì thoải mái
+      chạy song song. Trùng batch thì lượt sau bị từ chối, kèm tên người đang giữ.</p>
+    </div>
+
+    <p>Nút <b>Các lượt đang chạy</b> ở góc trên cho biết ai đang chạy gì, được bao lâu
+    rồi, và cho phép xem hoặc dừng từng lượt.</p>
+
+    <h3>Số batch chạy cùng lúc</h3>
+    <p>Ô này để <code>0</code> là tự đếm theo số dòng bạn nhập. Nhập 10 batch thì chạy
+    10 cái song song. Mỗi lượt được cấp <b>128 nhân</b>, chia đều cho các batch trong lượt đó.</p>
+
+    <p>Máy có 256 nhân, nên hai người chạy cùng lúc là vừa khít, ba người trở lên thì
+    chia sẻ — chậm hơn một chút chứ không hỏng.</p>
+  </section>
+
+  <!-- 8 -->
+  <section id="sheet">
+    <h2>Kết quả vào sheet nào</h2>
+    <p class="sub">Mỗi quy trình ghi vào một sổ riêng, và cách chia tab cũng khác nhau.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Quy trình</th><th>Sheet</th><th>Tab được tạo</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Automate + compare<br><span style="color:var(--ink-3);font-size:13.5px">Compare lại · Training</span></td>
+            <td>chính / training</td>
+            <td>Một tab <code>Batch_&lt;mã&gt;</code> cho mỗi batch, cộng một tab
+                <code>All_Batches</code> gộp tất cả.</td>
+          </tr>
+          <tr>
+            <td>Rerun</td>
+            <td>rerun</td>
+            <td>Một tab cho <b>mỗi thư mục nguồn</b>, đặt tên theo đúng tên thư mục
+                (<code>Rerun_260801_RT_013</code>…). <b>Không có</b> <code>All_Batches</code>.</td>
+          </tr>
+          <tr>
+            <td>Xuất FASTA</td>
+            <td>—</td>
+            <td>Không ghi sheet nào.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Vì sao rerun chia tab theo thư mục:</b> mỗi thư mục trong <code>Sequencher_temp/rerun</code>
+      là một đợt chạy lại riêng. Cùng một mẫu có thể được phân tích lại ở hai đợt khác nhau
+      và cho kết quả khác nhau. Gộp chung vào một bảng thì hai kết quả nằm cạnh nhau mà
+      không phân biệt được, nên mỗi đợt giữ tab của mình.</p>
+    </div>
+
+    <p>Mọi tab đều được định dạng giống nhau: cột rộng <b>90px</b>, chữ tự xuống dòng,
+    hàng tiêu đề nền xanh nhạt và khoá lại khi cuộn.</p>
+  </section>
+
+  <!-- 9 -->
+  <section id="loi">
+    <h2>Khi một batch báo hỏng</h2>
+    <p class="sub">Bốn nguyên nhân dưới đây chiếm gần hết các ca thực tế đã gặp.</p>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th style="width:30%">Dấu hiệu</th><th>Nguyên nhân</th><th style="width:31%">Xử lý</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Trùng LID</b><br><span style="color:var(--ink-3);font-size:13.5px">Duplicate LID in Sequencher input</span></td>
+            <td>Batch có hai file ZIP chứa cùng một mẫu — thường là hai lần tách DNA,
+                hoặc cùng một mẫu đặt tên file khác nhau. Hệ thống không tự chọn được bản nào.</td>
+            <td>Xem lại thư mục ZIP, giữ lại một bản, hoặc báo để tách riêng từng lần chạy.</td>
+          </tr>
+          <tr>
+            <td><b>Mẫu không có dữ liệu</b><br><span style="color:var(--ink-3);font-size:13.5px">ETL failed · No columns to parse</span></td>
+            <td>File AB1 không đọc được base nào — máy giải trình tự cho ra toàn <code>N</code>.
+                Đây là lỗi mẫu, không phải lỗi phần mềm.</td>
+            <td><span class="chip err">Phải giải trình tự lại</span> Không có cách chữa bằng phần mềm.</td>
+          </tr>
+          <tr>
+            <td><b>Không tìm thấy mẫu nào để chạy lại</b></td>
+            <td>Mã batch không khớp dữ liệu trong hệ thống. Hay gặp khi tên ZIP mang
+                ngày rerun thay vì ngày batch gốc.</td>
+            <td>Đối chiếu mã batch với tên thư mục dữ liệu gốc rồi nhập lại.</td>
+          </tr>
+          <tr>
+            <td><b>Batch chưa được nạp</b></td>
+            <td>Chưa có file Excel danh sách mẫu hoặc chưa có dữ liệu thô trong hệ thống.</td>
+            <td>Chạy bước 2 trước, hoặc báo người phụ trách nạp dữ liệu.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Bảng tiến độ không nói rõ vì sao hỏng.</b> Lý do chi tiết nằm trong log riêng
+      của từng batch trên máy chủ, ở <code>logs/&lt;mã batch&gt;.log</code>. Gửi tên batch
+      cho người phụ trách là tra được.</p>
+    </div>
+
+    <p>Một batch hỏng <b>không kéo theo các batch khác</b>. Những batch chạy được vẫn
+    gộp và vẫn lên sheet bình thường; danh sách batch hỏng hiện ở cuối lượt chạy.</p>
+  </section>
+
+  <!-- 10 -->
+  <section id="server">
+    <h2>Khởi động lại máy chủ</h2>
+    <p class="sub">Phần này dành cho người quản trị máy chủ, không phải người dùng thường.</p>
+
+    <p>Máy chủ chạy trong một phiên <code>tmux</code> để vẫn sống sau khi đóng terminal:</p>
+
+<pre><code>tmux kill-session -t mtdna
+tmux new -d -s mtdna -c /home/minhtq/mtdna_raw 'bash web/start.sh'</code></pre>
+
+    <div class="note warn">
+      <p><b>Tắt tmux không dừng được lượt đang chạy.</b> Tiến trình pipeline nằm ở nhóm
+      riêng nên nó tiếp tục chạy mồ côi. Muốn dừng hẳn thì bấm nút <b>Dừng</b> trên
+      giao diện trước, rồi mới tắt tmux.</p>
+    </div>
+
+    <p>Kiểm tra máy chủ còn sống không:</p>
+<pre><code>tmux ls
+curl -s http://localhost:8765/api/status</code></pre>
+  </section>
+
+  <footer>
+    <p>Sổ tay này mô tả giao diện web trong nhánh <code>dev</code> của <code>mtdna_raw</code>.
+    Tài liệu kỹ thuật chi tiết hơn nằm ở <code>web/README.md</code> trong mã nguồn.</p>
+  </footer>
+
+</div>
+</body>
+</html>
