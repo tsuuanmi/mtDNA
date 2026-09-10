@@ -1,5 +1,10 @@
 # Tracy Noise QC
 
+> **Architecture direction**: This document describes the current implemented
+> Tracy noise-QC behavior. The proposed modular evolution into artifact-specific
+> assessors, generic trusted-coverage trimming, and sample-level QC promotion is
+> documented in [tracy-qc-architecture.md](tracy-qc-architecture.md).
+
 ## Goal
 
 The Tracy QC step finds trace areas that are probably noisy, removes variants in
@@ -494,20 +499,3 @@ Pipeline/report tests cover:
     noisy-only coverage span.
 19. Disabling `noise_mask_enabled` restores the original variant output and
     intervals while still writing QC reports with empty exclusions.
-20. Masking runs after the existing Tracy quality, poly-C, position-specific,
-    and region filters.
-
-## Runtime order
-
-1. Decompose AB1 files and calculate per-trace QC ranges.
-2. Run `etl.process()` to produce canonical per-trace variants.
-3. Match each JSON filename to its `TraceQCResult`.
-4. Apply `noise_mask.py` when `noise_mask_enabled` (reported as `mask_enabled`) is true.
-5. Recalculate flags on the masked trace sample.
-6. Attach exclusions to the matching trace report.
-7. Write the per-sample QC report.
-8. Combine masked forward/reverse samples.
-9. Write final sample, region, and batch JSON outputs.
-
-No new Python dependency is used. The QC report is a Tracy-specific metadata
-artifact and does not alter the core `Sample` or `Variant` schemas.
