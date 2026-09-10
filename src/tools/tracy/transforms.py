@@ -9,10 +9,6 @@ from typing import Any, NamedTuple
 from Bio.Seq import Seq
 from loguru import logger
 
-from src.core.polyc import (
-    directional_hv1_polyc_suppression_reason,
-    directional_hv2_polyc_exclusion_reason,
-)
 from src.core.variants import normalize_position, pos_base
 from src.tools.tracy.utils import (
     NUM_PEAK_CHANNELS,
@@ -28,7 +24,6 @@ from src.tools.tracy.utils import (
     POS_515,
     POS_523,
     POS_524,
-    POS_525,
     POS_16189,
     POS_16193,
     PrimerTypeInfo,
@@ -102,6 +97,21 @@ _CREATED_FIXED_PEAKS: list[float] = [1000, 10, 10, 10]
 _CREATED_FIXED_QUALITY = 50
 
 
+def _derived_provenance() -> dict[str, Any]:
+    """Explicitly distinguish canonical placeholders from measured evidence."""
+    return {
+        "evidence_kind": "derived",
+        "lineage": "unknown",
+        "source_candidate_ids": [],
+        "source_positions": [],
+        "original_pos": None,
+        "original_ref": None,
+        "original_seq": None,
+        "index": None,
+        "peak_index": None,
+    }
+
+
 def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) -> dict[str, Any] | None:
     """Create a new variant dict at a given position.
 
@@ -129,9 +139,8 @@ def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) ->
             "ref": ref_base,
             "seq": "-",
             "peaks": list(_CREATED_FIXED_PEAKS),
-            "index": pos_int,
-            "peak_index": pos_int,
             "quality": _CREATED_FIXED_QUALITY,
+            **_derived_provenance(),
         }
 
     # HV2 polyC insertion (309.x / 315.x)
@@ -141,9 +150,8 @@ def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) ->
             "ref": "-",
             "seq": "C",
             "peaks": list(_CREATED_FIXED_PEAKS),
-            "index": pos_int,
-            "peak_index": pos_int,
             "quality": _CREATED_FIXED_QUALITY,
+            **_derived_provenance(),
         }
 
     # SNP: look up the alignment column closest to pos for peak data
@@ -310,52 +318,6 @@ def _apply_polyc_insertion(variant: dict[str, Any]) -> None:
         variant["reason"] = "HV2 polyC insertion normalized to canonical insertion"
 
 
-def _apply_polyc_primer_filters(
-    variant: dict[str, Any],
-    primers: PrimerTypeInfo,
-    conditions: dict[str, Any],
-) -> None:
-    """Apply shared HV2 and HV1 directional polyC filters after calling."""
-    pos_int = pos_base(variant["pos"])
-
-    # The shared policy owns directional exclusion coverage and reasons.
-    # Tracy only maps its primer metadata to canonical trace directions.
-    forward_reason = directional_hv2_polyc_exclusion_reason(
-        variant["pos"],
-        "forward" if primers.is_hv2f_hv3f else None,
-    )
-    if forward_reason is not None:
-        variant["remove"] = True
-        variant["reason"] = forward_reason
-
-    reverse_reason = directional_hv2_polyc_exclusion_reason(
-        variant["pos"],
-        "reverse" if primers.is_hv2r_hv3r else None,
-    )
-    if reverse_reason is not None:
-        variant["remove"] = True
-        variant["reason"] = reverse_reason
-
-    # Remove variants at position > 525 for HV2F/HV3F primers
-    if pos_int > POS_525 and primers.is_hv2f_hv3f:
-        variant["remove"] = True
-        variant["reason"] = "Variant in position >= 525 (HV2F/HV3F primers)"
-
-    # The shared policy owns the HV1 trigger, directional boundary, and reason.
-    for direction in (
-        "forward" if primers.is_hv1f else None,
-        "reverse" if primers.is_hv1r else None,
-    ):
-        hv1_reason = directional_hv1_polyc_suppression_reason(
-            variant["pos"],
-            direction,
-            polyc_created=conditions.get("has_16189_T_C", False),
-        )
-        if hv1_reason is not None:
-            variant["remove"] = True
-            variant["reason"] = hv1_reason
-
-
 def _apply_conversion_deletions(
     variant: dict[str, Any],
     conditions: dict[str, Any],
@@ -394,16 +356,12 @@ def _apply_conversion_deletions(
 def _apply_polyc_transforms(
     variant: dict[str, Any],
     conditions: dict[str, Any],
-    primers: PrimerTypeInfo,
     params: _CreateParams,
     additional_variants: list[dict[str, Any]],
 ) -> None:
     """Apply polyC-specific transformations to a variant."""
     # Normalize raw polyC insertions; canonical insertions are created later.
     _apply_polyc_insertion(variant)
-
-    # Primer-specific polyC filtering
-    _apply_polyc_primer_filters(variant, primers, conditions)
 
     # Special case: 16189 deletion with 16193 deletion
     if pos_base(variant["pos"]) == POS_16189 and conditions["has_16189_deletion"]:
@@ -486,9 +444,8 @@ def _create_polyc_insertions(
             "ref": "-",
             "seq": "C",
             "peaks": [1000, 10, 10, 10],
-            "index": pos_base(pos_str),
-            "peak_index": pos_base(pos_str),
             "quality": 50,
+            **_derived_provenance(),
         }
         for pos_str in _POLYC_PATTERNS.get(hv2_polyc, [])
     )
@@ -497,7 +454,7 @@ def _create_polyc_insertions(
 def apply_all_transformations(
     variants: list[dict[str, Any]],
     conditions: dict[str, Any],
-    primers: PrimerTypeInfo,
+    primers: PrimerTypeInfo,  # noqa: ARG001 - retained for caller compatibility
     params: _CreateParams,
 ) -> None:
     """Apply all variant transformations in-place.
@@ -517,13 +474,13 @@ def apply_all_transformations(
         _apply_insertion_remap(variant, conditions)
 
         # PolyC transforms
-        _apply_polyc_transforms(variant, conditions, primers, params, additional_variants)
+        _apply_polyc_transforms(variant, conditions, params, additional_variants)
 
     # Append any additional variants created by transforms
     variants.extend(additional_variants)
 
     # Create canonical HV2 polyC insertions from the HV2_polyC count. Runs after
-    # the transform loop (primer removal already handled the polyC variants).
+    # the transform loop. Directional evidence policy belongs to optional QC.
     _create_polyc_insertions(variants, conditions)
 
 

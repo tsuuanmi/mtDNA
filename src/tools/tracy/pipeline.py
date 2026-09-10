@@ -39,19 +39,14 @@ from src.core.models import Sample, Tool
 from src.core.paths import OutputPaths
 from src.core.region import REGION_TO_KEYS, validate_region_group_intervals, write_region_jsons
 from src.core.sample import merge_intervals
+from src.core.variants import get_hv_region_for_position, pos_base
 from src.tools.tracy.etl import merge_variants, process
-from src.tools.tracy.noise_mask import apply_noise_mask
+from src.tools.tracy.evidence import TraceEvidence
 from src.tools.tracy.preprocessing import DecomposeConfig, decompose_sample
-from src.tools.tracy.quality_control import (
-    ExcludedVariant,
-    NoiseConfig,
-    TraceQCResult,
-    analyze_trace_file,
-    build_qc_report,
-    error_result,
-    unavailable_result,
-    with_excluded_variants,
-)
+from src.tools.tracy.qc.engine import evaluate_trace
+from src.tools.tracy.qc.models import QCConfig, TraceQCResult, error_result, unavailable_result
+from src.tools.tracy.qc.reporting import build_qc_report
+from src.tools.tracy.qc.signal_noise import analyze_trace_file
 
 
 @dataclass(frozen=True)
@@ -65,12 +60,12 @@ class PreparedSample:
 
 @dataclass(frozen=True)
 class ProcessedTrace:
-    """Post-ETL trace sample and its noise-mask exclusions."""
+    """Trusted per-trace evidence and its complete QC result."""
 
     sample_id: str
     filename: str
     sample: Sample
-    excluded_variants: tuple[ExcludedVariant, ...]
+    qc_result: TraceQCResult
 
 
 @dataclass
@@ -174,7 +169,7 @@ def _combine_same_tool_samples(samples: list[Sample], sample_id: str) -> Sample:
         sample_id=sample_id,
         variants=merged_variants,
         source_tool=Tool.TRACY,
-        intervals=merged_intervals or None,
+        intervals=merged_intervals,
         sample_flags=all_sample_flags or [],
         variant_flags=all_variant_flags,
         information=None,
@@ -236,7 +231,7 @@ def _prepare_sample(
     input_dir: Path,
     preprocess_dir: Path,
     ref_path: str,
-    noise_config: NoiseConfig,
+    qc_config: QCConfig,
 ) -> PreparedSample:
     """Run Tracy decompose and QC for one sample without calling variants."""
     tracy_config = get_settings().tracy
@@ -257,7 +252,12 @@ def _prepare_sample(
         result = unavailable_result(sample_id, "No Tracy HV JSON files were produced")
         return PreparedSample(sample_id, (), (result,))
 
-    qc_results = tuple(analyze_trace_file(path, sample_id=sample_id, config=noise_config) for path in json_paths)
+    qc_results = tuple(
+        analyze_trace_file(path, sample_id=sample_id, config=qc_config.noise)
+        if qc_config.enabled and (qc_config.signal_noise_enabled or qc_config.polyc_enabled)
+        else unavailable_result(sample_id, "Trace QC disabled", filename=path.name)
+        for path in json_paths
+    )
     return PreparedSample(sample_id, json_paths, qc_results)
 
 
@@ -265,36 +265,25 @@ def _process_prepared_sample(
     prepared: PreparedSample,
     ref_seq: str,
     *,
-    noise_mask_enabled: bool,
+    qc_config: QCConfig,
 ) -> list[ProcessedTrace]:
-    """Run ETL and optional per-trace noise masking for one sample."""
+    """Build raw ETL evidence, then optionally derive trusted trace evidence."""
     qc_by_filename = {result.filename: result for result in prepared.qc_results if result.filename is not None}
     results: list[ProcessedTrace] = []
     for json_path in prepared.json_paths:
         qc_result = qc_by_filename.get(json_path.name)
         if qc_result is None:
-            msg = f"No QC result found for Tracy file {json_path.name}"
-            raise ValueError(msg)
+            qc_result = unavailable_result(prepared.sample_id, "No trace QC result", filename=json_path.name)
         try:
-            sample = process(sample_id=prepared.sample_id, input_path=json_path, ref_seq=ref_seq)
+            evidence = TraceEvidence()
+            sample = process(sample_id=prepared.sample_id, input_path=json_path, ref_seq=ref_seq, evidence=evidence)
+            if qc_config.enabled:
+                data = json.loads(json_path.read_text(encoding="utf-8")) if qc_config.read_edge_enabled else {}
+                sample, qc_result = evaluate_trace(sample, evidence, qc_result, qc_config, data)
         except (ValueError, KeyError, OSError, RuntimeError) as error:
             logger.error("ETL failed for sample {} file {}: {}", prepared.sample_id, json_path.name, error)
             continue
-
-        if noise_mask_enabled:
-            mask_result = apply_noise_mask(sample, qc_result.ranges)
-            sample = mask_result.sample
-            excluded_variants = mask_result.excluded_variants
-        else:
-            excluded_variants = ()
-        results.append(
-            ProcessedTrace(
-                sample_id=prepared.sample_id,
-                filename=json_path.name,
-                sample=sample,
-                excluded_variants=excluded_variants,
-            ),
-        )
+        results.append(ProcessedTrace(prepared.sample_id, json_path.name, sample, qc_result))
     return results
 
 
@@ -302,22 +291,24 @@ def _write_sample_qc_reports(
     preprocess_dir: Path,
     prepared_samples: list[PreparedSample],
     processed_traces: list[ProcessedTrace],
-    config: NoiseConfig,
+    config: QCConfig,
 ) -> None:
-    """Write one deterministic QC report with exclusions per sample."""
-    exclusions = {(trace.sample_id, trace.filename): trace.excluded_variants for trace in processed_traces}
+    """Write one deterministic report containing per-trace evidence decisions."""
+    evaluated = {(trace.sample_id, trace.filename): trace.qc_result for trace in processed_traces}
     for prepared in sorted(prepared_samples, key=lambda item: item.sample_id):
         sample_dir = preprocess_dir / prepared.sample_id
         sample_dir.mkdir(parents=True, exist_ok=True)
         report_path = sample_dir / "qc_report.json"
         qc_results = [
-            with_excluded_variants(
-                result,
-                exclusions.get((prepared.sample_id, result.filename or ""), ()),
-            )
-            for result in prepared.qc_results
+            evaluated.get((prepared.sample_id, result.filename or ""), result) for result in prepared.qc_results
         ]
-        report = build_qc_report(qc_results, config)
+        report = build_qc_report(qc_results, config.noise)
+        report["assessors"] = {
+            "enabled": config.enabled,
+            "signal_noise_enabled": config.signal_noise_enabled,
+            "polyc_enabled": config.polyc_enabled,
+            "read_edge_enabled": config.read_edge_enabled,
+        }
         report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         logger.info("Wrote Tracy QC report to {}", report_path)
 
@@ -327,7 +318,7 @@ def _prepare_batch(
     input_dir: Path,
     preprocess_dir: Path,
     ref_path: str,
-    noise_config: NoiseConfig,
+    qc_config: QCConfig,
     max_workers: int,
 ) -> list[PreparedSample]:
     """Decompose and analyze all requested samples in parallel."""
@@ -340,7 +331,7 @@ def _prepare_batch(
                 input_dir,
                 preprocess_dir,
                 ref_path,
-                noise_config,
+                qc_config,
             ): sample_id
             for sample_id in sample_ids
         }
@@ -360,9 +351,9 @@ def _process_prepared_batch(
     ref_seq: str,
     max_workers: int,
     *,
-    noise_mask_enabled: bool,
+    qc_config: QCConfig,
 ) -> list[ProcessedTrace]:
-    """Run ETL and per-trace noise masking in parallel."""
+    """Run ETL and optional trace-evidence QC in parallel."""
     processed: list[ProcessedTrace] = []
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         futures = {
@@ -370,7 +361,7 @@ def _process_prepared_batch(
                 _process_prepared_sample,
                 prepared,
                 ref_seq,
-                noise_mask_enabled=noise_mask_enabled,
+                qc_config=qc_config,
             ): prepared.sample_id
             for prepared in prepared_samples
             if prepared.json_paths
@@ -419,7 +410,7 @@ def process_batch(
     (paths.preprocess_dir / "qc_report.json").unlink(missing_ok=True)
 
     # Read sample IDs from TXT file (always required)
-    noise_config = NoiseConfig.from_settings()
+    qc_config = QCConfig.from_settings()
     if options.samples_path is None:
         logger.error("No samples_path provided — sample IDs must come from a TXT file")
         return {}
@@ -445,7 +436,7 @@ def process_batch(
         input_dir,
         paths.preprocess_dir,
         options.ref_path,
-        noise_config,
+        qc_config,
         max_workers,
     )
     # Phase 2: process and mask each trace before same-sample merging.
@@ -453,9 +444,9 @@ def process_batch(
         prepared_samples,
         ref_seq,
         max_workers,
-        noise_mask_enabled=noise_config.mask_enabled,
+        qc_config=qc_config,
     )
-    _write_sample_qc_reports(paths.preprocess_dir, prepared_samples, processed, noise_config)
+    _write_sample_qc_reports(paths.preprocess_dir, prepared_samples, processed, qc_config)
 
     if not processed:
         logger.warning("No samples successfully processed")
@@ -495,16 +486,48 @@ def process_batch(
     return combined
 
 
+def _trace_covers(sample: Sample, position: int) -> bool:
+    """Return whether a trusted trace supports a reference observation."""
+    return any(start <= position <= end for spans in (sample.intervals or {}).values() for start, end in spans)
+
+
+def _trusted_trace_conflicts(traces: list[ProcessedTrace]) -> list[str]:
+    """Describe only disagreements between independently trusted observations."""
+    flags: list[str] = []
+    for index, left in enumerate(traces):
+        for right in traces[index + 1 :]:
+            positions = {
+                pos_base(v.pos)
+                for v in [*left.sample.variants, *right.sample.variants]
+                if len(v.ref) == 1 and v.ref != "-"
+            }
+            for position in sorted(positions):
+                left_calls = {v.seq for v in left.sample.variants if pos_base(v.pos) == position and len(v.ref) == 1}
+                right_calls = {v.seq for v in right.sample.variants if pos_base(v.pos) == position and len(v.ref) == 1}
+                left_alleles = left_calls or ({"reference"} if _trace_covers(left.sample, position) else set())
+                right_alleles = right_calls or ({"reference"} if _trace_covers(right.sample, position) else set())
+                if left_alleles and right_alleles and left_alleles != right_alleles:
+                    region = get_hv_region_for_position(position) or "unknown"
+                    flags.append(
+                        f"TRACE_CONFLICT region={region} interval=[{position},{position}] "
+                        f"traces=[{left.filename},{right.filename}]"
+                    )
+    return list(dict.fromkeys(flags))
+
+
 def _build_combined_samples(processed: list[ProcessedTrace]) -> dict[str, Sample]:
-    """Group processed traces by sample ID and combine same-sample results."""
-    grouped: dict[str, list[Sample]] = defaultdict(list)
+    """Group trusted traces and promote only unresolved trace conflicts."""
+    grouped: dict[str, list[ProcessedTrace]] = defaultdict(list)
     for trace in processed:
-        grouped[trace.sample_id].append(trace.sample)
+        grouped[trace.sample_id].append(trace)
 
     combined: dict[str, Sample] = {}
-    for sample_id, samples in grouped.items():
-        combined[sample_id] = _combine_same_tool_samples(samples, sample_id)
-
+    for sample_id, traces in grouped.items():
+        sample = _combine_same_tool_samples([trace.sample for trace in traces], sample_id)
+        conflicts = _trusted_trace_conflicts(traces)
+        if conflicts:
+            sample = sample.model_copy(update={"sample_flags": [*sample.sample_flags, *conflicts]})
+        combined[sample_id] = sample
     return combined
 
 

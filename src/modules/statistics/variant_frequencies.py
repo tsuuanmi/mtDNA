@@ -15,7 +15,7 @@ from loguru import logger
 from src.core.variants import format_variants_simplified, normalize_position, pos_sort_key
 
 DEFAULT_INPUT_JSON = Path("/mnt/nas/bca/mtDNA/science/results/merged/merged_statistics.json")
-DEFAULT_OUTPUT_TSV = Path("/home/tan/workspaces/mtdna_raw/results/modules/statistics/variant_frequencies.tsv")
+DEFAULT_OUTPUT_TSV = Path("results/modules/statistics/variant_frequencies.tsv")
 VARIANT_GROUPS = ("snps", "insertions", "deletions")
 TSV_FIELDS = ["Variant", "Type", "Pos", "Ref", "Seq", "Sample_Count", "Total_Samples", "Frequency"]
 VariantKey = tuple[int | str, str, str]

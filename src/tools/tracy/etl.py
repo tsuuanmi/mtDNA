@@ -12,6 +12,7 @@ lives in ``src.tools.tracy.transforms``.
 """
 
 import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, NamedTuple
 
@@ -27,6 +28,7 @@ from src.core.variants import (
     pos_base,
     pos_sort_key,
 )
+from src.tools.tracy.evidence import Disposition, TraceEvidence, observe
 from src.tools.tracy.transforms import (
     _create_variant,
     _CreateParams,
@@ -156,10 +158,10 @@ def _call_variant_at_index(index: int, params: _CallParams) -> dict[str, Any] | 
 # ---------------------------------------------------------------------------
 
 
-def _should_skip_variant(
+def _variant_rejection(  # noqa: PLR0911
     variant: dict[str, Any],
     config: _FilterConfig,
-) -> bool:
+) -> tuple[Disposition, str] | None:
     """Check if a variant should be skipped during filtering.
 
     Filter conditions (in order):
@@ -174,15 +176,15 @@ def _should_skip_variant(
     """
     # Skip variants marked for removal
     if variant.get("remove", False):
-        return True
+        return "normalized", variant.get("reason", "Removed during nomenclature conversion")
 
     # Skip 'N' bases
     if variant["seq"] == "N":
-        return True
+        return "untrusted", "Unresolved base call (N)"
 
     # Skip variants outside regions
     if not is_position_in_intervals(variant["pos"], [(int(v[0]), int(v[1])) for v in config.variant_regions.values()]):
-        return True
+        return "out_of_scope", "Outside configured variant regions"
 
     # Skip HV1 deletions except 16189 and 16193
     if (
@@ -190,7 +192,7 @@ def _should_skip_variant(
         and pos_base(variant["pos"]) not in [POS_16189, POS_16193]
         and variant["seq"] == "-"
     ):
-        return True
+        return "untrusted", "Unsupported HV1 deletion outside 16189/16193"
 
     # Skip low quality variants (except position 73)
     if (
@@ -198,10 +200,12 @@ def _should_skip_variant(
         and variant["quality"] < config.quality_threshold
         and pos_base(variant["pos"]) != POS_73
     ):
-        return True
+        return "untrusted", "Below Tracy variant quality threshold"
 
     # Validate peak quality
-    return not validate_peak_quality(variant, config.min_peak_value, config.pratio, config.sample)
+    if not validate_peak_quality(variant, config.min_peak_value, config.pratio, config.sample):
+        return "untrusted", "Failed Tracy peak-quality validation"
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -365,12 +369,13 @@ def _maybe_add_hv2f_pos73(
         file_intervals[filename].append([POS_73, 75])
 
 
-def process(  # noqa: PLR0915
+def process(  # noqa: C901, PLR0912, PLR0915
     sample_id: str,
     input_path: Path,
     *,
     ref_seq: str,
     config: _ProcessConfig | None = None,
+    evidence: TraceEvidence | None = None,
 ) -> Sample:
     """Process a single Tracy decompose JSON file into a Sample.
 
@@ -477,12 +482,25 @@ def process(  # noqa: PLR0915
         end_index,
     )
 
+    if evidence is not None:
+        evidence.filename = input_path.name
+        evidence.raw_intervals = _compute_intervals(file_intervals, variant_regions)  # type: ignore[arg-type]
+        for candidate_id, variant in enumerate(raw_variants):
+            variant["candidate_id"] = candidate_id
+            variant["source_candidate_ids"] = [candidate_id]
+            snapshot = deepcopy(variant)
+            snapshot["source_positions"] = [variant["pos"]]
+            snapshot["evidence_kind"] = "measured"
+            evidence.raw_candidates.append(snapshot)
+
     # HV2F position-73 special handling.
     _maybe_add_hv2f_pos73(raw_variants, primers, transform_params, file_intervals, filename, sample)
 
     # Detect variant conditions after position update, so insertion positions
     # are decimal strings (e.g. "513.1") that conditions and remap rely on.
     conditions = detect_variant_conditions(raw_variants)
+    if evidence is not None:
+        evidence.has_16189_t_c = conditions["has_16189_T_C"]
 
     # Apply transformations
     apply_all_transformations(raw_variants, conditions, primers, transform_params)
@@ -497,9 +515,11 @@ def process(  # noqa: PLR0915
     )
     filtered_variants: list[dict[str, Any]] = []
     for variant in raw_variants:
-        if _should_skip_variant(variant, filter_config):
+        rejection = _variant_rejection(variant, filter_config)
+        if rejection is not None:
+            disposition, reason = rejection
+            observe(evidence, variant, disposition, reason)
             if variant.get("remove", False):
-                reason = variant.get("reason", "marked for removal during conversion")
                 logger.warning(
                     "Sample {} trace {}: Remove variant {} {}>{}, quality={} ({})",
                     sample,
@@ -515,6 +535,15 @@ def process(  # noqa: PLR0915
         # Remove index fields before building Variant objects
         variant.pop("index", None)
         variant.pop("peak_index", None)
+        if "candidate_id" not in variant:
+            variant["evidence_kind"] = "derived"
+            variant["source_candidate_ids"] = []
+        else:
+            variant["evidence_kind"] = "measured"
+        observe(evidence, variant, "accepted", "accepted by ETL")
+        variant.pop("candidate_id", None)
+        variant.pop("source_candidate_ids", None)
+        variant.pop("evidence_kind", None)
         filtered_variants.append(variant)
 
     # Build Variant objects
@@ -538,7 +567,7 @@ def process(  # noqa: PLR0915
         sample_id=sample_id,
         variants=variant_list,
         source_tool=Tool.TRACY,
-        intervals=intervals or None,
+        intervals=intervals,
         batch_id=batch_id,
         sample_flags=sample_flags_list or [],
         variant_flags=variant_flags_dict,

@@ -8,7 +8,7 @@
 
 Run the merger with `bash scripts/modules/statistics/run.sh`.
 
-Prepare the blinded TNLS test data with `bash scripts/modules/statistics/test.sh`; it recreates `/home/tan/workspaces/mtdna_raw/temp/test`. Maintain its local, ignored blind-ID mapping at `data/modules/statistics/sample_mapping.tsv`.
+Prepare the blinded TNLS test data with `bash scripts/modules/statistics/test.sh`; it recreates `temp/test`. Maintain its local, ignored blind-ID mapping at `data/modules/statistics/sample_mapping.tsv`.
 
 ## Public API
 

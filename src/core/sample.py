@@ -204,7 +204,9 @@ def generate_sequence(
 
     Accepts a Sample model and returns a structured Sequence result object.
     Derives seq_regions from sample.intervals, regions from config defaults,
-    and ref_path from config when not provided.
+    and ref_path from config when not provided. ``intervals=None`` preserves
+    legacy unspecified coverage; an explicit intervals mapping with no spans
+    represents no trusted coverage and produces all-N sequences.
 
     Args:
         sample: A Sample model with variants, intervals, and sample_id.
@@ -239,6 +241,12 @@ def generate_sequence(
     if seq_regions:
         con_dict = _mark_non_region_as_n(con_dict, seq_regions)
         ref_dict = _mark_non_region_as_n(ref_dict, seq_regions)
+    elif sample.intervals is not None:
+        # Explicit empty coverage is NO_CALL, not an implicit reference call.
+        # Use reference positions only: no untrusted insertion or deletion may
+        # change the length of a sequence with no trusted evidence.
+        ref_dict = dict.fromkeys(ref_dict, "N")
+        con_dict = dict(ref_dict)
 
     # Extract HV region sequences
     hv_seqs = {}

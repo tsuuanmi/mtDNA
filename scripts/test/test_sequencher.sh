@@ -12,7 +12,7 @@ for BATCH in "${BATCHES[@]}"; do
     #     --batch-id "${BATCH}"
 
     python -m src.tools.sequencher.pipeline \
-        --input-dir "/home/tan/workspaces/mtdna_raw/temp/20260817" \
+        --input-dir "temp/20260817" \
         --output-dir "results/tools/sequencher/20260817" \
         --ref-path "$REFERENCE" \
         --batch-id "20260817"

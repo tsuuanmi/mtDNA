@@ -49,7 +49,7 @@ HCLS_RAW_ROOT="/mnt/nas/bca/mtDNA/science/HCLS"
 HCLS_BATCH="20260317"
 HCLS_RAW_DIR="$HCLS_RAW_ROOT/$HCLS_BATCH"
 HCLS_OUTPUT_DIR="$WORKSPACE/results/modules/HCLS/$HCLS_BATCH"
-HCLS_SAMPLES="/home/tan/workspaces/mtdna_raw/results/tools/sequencher/20260817/json/statistic_fullbatch.json"
+HCLS_SAMPLES="results/tools/sequencher/20260817/json/statistic_fullbatch.json"
 
 # TNLS samples
 TNLS_SAMPLES="/mnt/nas/bca/mtDNA/science/results/merged/merged_statistics.json"

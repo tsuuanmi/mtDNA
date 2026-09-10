@@ -79,14 +79,14 @@ bash scripts/pipeline.sh -l /path/to/samples.txt -s 3,4 MS_191125_004
 
 ```bash
 # Build
-docker build -t mtdna_raw:v1 .
+docker build -t mtdna:v1 .
 
 # Run
 docker run -it --rm \
   -v /path/to/data:/app/data \
   -v /path/to/results:/app/results \
   -v $(pwd)/.env:/app/.env \
-  mtdna_raw:v1
+  mtdna:v1
 ```
 
 ---

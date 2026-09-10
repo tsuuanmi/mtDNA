@@ -7,12 +7,21 @@ It does not call or filter variants and has no dependency on Tracy ETL models.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, replace
 from math import isfinite
 from statistics import median
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
-from src.config import get_settings
+from src.tools.tracy.qc.models import (
+    BaseMetric,
+    NoiseConfig,
+    NoiseRange,
+    TraceQCResult,
+    TraceStatus,
+    WindowResult,
+    WindowStatus,
+    error_result,
+    unavailable_result,
+)
 from src.tools.tracy.utils import (
     alignment_bounds,
     alignment_reference_position,
@@ -25,184 +34,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-TraceStatus = Literal["clean", "suspicious", "likely_noisy", "unavailable", "error"]
-WindowStatus = Literal["clean", "suspicious", "likely_noisy"]
 _MIN_MODERATE_NOISE_CHECKS = 2
-
-
-@dataclass(frozen=True)
-class NoiseConfig:
-    """Settings for noise masking, base metrics, and overlapping windows."""
-
-    mask_enabled: bool
-    window_size: int
-    window_step: int
-    min_valid_bases: int
-    min_supporting_windows: int
-    snr_threshold: float
-    low_snr_threshold: float
-    purity_threshold: float
-    background_threshold: float
-    second_peak_threshold: float
-    quality_threshold: float
-    signal_threshold: float
-    bad_base_fraction: float
-    suspicious_base_fraction: float
-
-    @classmethod
-    def from_settings(cls) -> NoiseConfig:
-        """Build QC configuration from Tracy application settings."""
-        settings = get_settings().tracy
-        return cls(
-            mask_enabled=settings.noise_mask_enabled,
-            window_size=settings.noise_window_size,
-            window_step=settings.noise_window_step,
-            min_valid_bases=settings.noise_min_valid_bases,
-            min_supporting_windows=settings.noise_min_supporting_windows,
-            snr_threshold=settings.noise_snr_threshold,
-            low_snr_threshold=settings.noise_low_snr_threshold,
-            purity_threshold=settings.noise_purity_threshold,
-            background_threshold=settings.noise_background_threshold,
-            second_peak_threshold=settings.noise_second_peak_threshold,
-            quality_threshold=settings.noise_quality_threshold,
-            signal_threshold=settings.noise_signal_threshold,
-            bad_base_fraction=settings.noise_bad_base_fraction,
-            suspicious_base_fraction=settings.noise_suspicious_base_fraction,
-        )
-
-
-@dataclass(frozen=True)
-class BaseMetric:
-    """Peak-separation measurements for one called base."""
-
-    alignment_index: int
-    reference_position: int
-    signal: float
-    noise: float
-    snr: float
-    purity: float
-    background_ratio: float
-    second_peak_ratio: float
-    quality: float | None
-
-
-@dataclass(frozen=True)
-class WindowResult:
-    """Aggregated measurements and classification for one trace window."""
-
-    alignment_start: int
-    alignment_end: int
-    start: int
-    end: int
-    valid_bases: int
-    median_snr: float
-    low_end_snr: float
-    median_purity: float
-    median_background_ratio: float
-    median_second_peak_ratio: float
-    median_quality: float | None
-    low_snr_fraction: float
-    low_purity_fraction: float
-    high_background_fraction: float
-    high_second_peak_fraction: float
-    low_quality_fraction: float
-    weak_signal_fraction: float
-    classification: WindowStatus
-
-    def to_dict(self) -> dict[str, Any]:
-        """Return a JSON-ready window record."""
-        return asdict(self)
-
-
-@dataclass(frozen=True)
-class NoiseRange:
-    """Merged reference and alignment range supported by noisy windows."""
-
-    start: int
-    end: int
-    alignment_start: int
-    alignment_end: int
-    supporting_windows: int
-    median_snr: float
-    low_end_snr: float
-    median_purity: float
-    classification: Literal["likely_noisy"] = "likely_noisy"
-
-    def to_dict(self) -> dict[str, Any]:
-        """Return a JSON-ready range record."""
-        return asdict(self)
-
-
-@dataclass(frozen=True)
-class ExcludedVariant:
-    """Variant removed because it overlaps a likely-noisy range."""
-
-    pos: int | str
-    ref: str
-    seq: str
-    noise_range: NoiseRange
-    reason: str = "overlaps likely-noisy range"
-
-    def to_dict(self) -> dict[str, Any]:
-        """Return a JSON-ready exclusion record."""
-        return {
-            "pos": self.pos,
-            "ref": self.ref,
-            "seq": self.seq,
-            "reason": self.reason,
-            "range": self.noise_range.to_dict(),
-        }
-
-
-@dataclass(frozen=True)
-class TraceQCResult:
-    """QC result for one Tracy trace or one missing trace output."""
-
-    sample_id: str
-    filename: str | None
-    status: TraceStatus
-    primer: str | None
-    strand: str | None
-    bases_evaluated: int
-    windows: tuple[WindowResult, ...] = ()
-    ranges: tuple[NoiseRange, ...] = ()
-    excluded_variants: tuple[ExcludedVariant, ...] = ()
-    reason: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        """Return a compact JSON-ready trace record."""
-        record: dict[str, Any] = {
-            "sample_id": self.sample_id,
-            "filename": self.filename,
-            "status": self.status,
-            "primer": self.primer,
-            "strand": self.strand,
-            "bases_evaluated": self.bases_evaluated,
-            "windows": [window.to_dict() for window in self.windows],
-            "ranges": [noise_range.to_dict() for noise_range in self.ranges],
-            "excluded_variants": [variant.to_dict() for variant in self.excluded_variants],
-        }
-        if self.reason is not None:
-            record["reason"] = self.reason
-        return record
-
-
-def with_excluded_variants(
-    result: TraceQCResult,
-    excluded_variants: tuple[ExcludedVariant, ...],
-) -> TraceQCResult:
-    """Return a trace result containing its post-ETL mask exclusions."""
-    return replace(result, excluded_variants=excluded_variants)
-
-
-def unavailable_result(sample_id: str, reason: str, filename: str | None = None) -> TraceQCResult:
-    """Create a result for a trace that could not provide QC measurements."""
-    return TraceQCResult(sample_id, filename, "unavailable", None, None, 0, reason=reason)
-
-
-def error_result(sample_id: str, reason: str, filename: str | None = None) -> TraceQCResult:
-    """Create a result for an invalid or unreadable trace."""
-    return TraceQCResult(sample_id, filename, "error", None, None, 0, reason=reason)
 
 
 def _percentile(values: list[float], percentile: float) -> float:
@@ -370,7 +202,7 @@ def _merge_noisy_windows(
     return tuple(_range_from_windows(group) for group in groups if len(group) >= min_supporting_windows)
 
 
-def _base_metrics(
+def extract_base_metrics(
     data: dict[str, Any],
     *,
     ref_start: int,
@@ -442,7 +274,7 @@ def analyze_trace_data(
     try:
         ref_start = normalize_ref_positions(trace_data)
         primer_info = detect_primer_type(filename)
-        metrics = _base_metrics(trace_data, ref_start=ref_start, is_reverse=primer_info.is_reverse)
+        metrics = extract_base_metrics(trace_data, ref_start=ref_start, is_reverse=primer_info.is_reverse)
     except (IndexError, KeyError, TypeError, ValueError) as error:
         return error_result(sample_id, str(error), filename)
 
@@ -499,27 +331,3 @@ def analyze_trace_file(
     if not isinstance(data, dict):
         return error_result(sample_id, "Tracy JSON root must be an object", path.name)
     return analyze_trace_data(data, sample_id=sample_id, filename=path.name, config=config)
-
-
-def build_qc_report(results: list[TraceQCResult], config: NoiseConfig | None = None) -> dict[str, Any]:
-    """Build the batch-level Tracy QC report."""
-    config = config or NoiseConfig.from_settings()
-    ordered = sorted(results, key=lambda result: (result.sample_id, result.filename or ""))
-    counts = {
-        status: sum(result.status == status for result in ordered)
-        for status in (
-            "clean",
-            "suspicious",
-            "likely_noisy",
-            "unavailable",
-            "error",
-        )
-    }
-    return {
-        "tool": "tracy",
-        "total": len(ordered),
-        "analyzed": counts["clean"] + counts["suspicious"] + counts["likely_noisy"],
-        **counts,
-        "settings": asdict(config),
-        "traces": [result.to_dict() for result in ordered],
-    }

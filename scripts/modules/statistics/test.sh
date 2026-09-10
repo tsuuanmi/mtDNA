@@ -7,7 +7,7 @@
 #
 # Prerequisites:
 #   data/modules/statistics/sample_mapping.tsv  — local sample mapping file
-#   /home/tan/workspaces/mtdna_raw/temp/test/    — wiped before run
+#   temp/test/    — wiped before run
 #
 # Steps:
 #   1. Run blind_copy.py to blind-copy samples, generate metrics JSON, and copy
@@ -23,7 +23,7 @@ WORKSPACE=$(pwd)
 
 DATA_DIR="/mnt/nas/bca/mtDNA/science/data"
 RESULTS_DIR="/mnt/nas/bca/mtDNA/science/results"
-OUTPUT_DIR="/home/tan/workspaces/mtdna_raw/temp/test"
+OUTPUT_DIR="temp/test"
 MAPPING_FILE="${WORKSPACE}/data/modules/statistics/sample_mapping.tsv"
 
 # Clean slate
