@@ -21,12 +21,15 @@ The TNLS module (`src/modules/TNLS/`) provides utilities for processing mtDNA va
 
 ### Verification Submodule
 
-| File | Purpose |
-|------|---------|
-| `verification/compare_1n_class.py` | Compare one-generation classification results (`Compare_Manager`) |
-| `verification/compare_TNLS_HCLS.py` | Compare TNLS results with HCLS classification + mtDNA-profile family summary |
-| `verification/utils.py` | Shared verification utilities (JSON loading, variant comparison) |
-| [Verification matching guide](verification.md) | Simple explanation of HCLS/TNLS matching, `N`/IUPAC calls, `315.1`, and the FAM-001 example |
+`src/modules/TNLS/verification/` compares HCLS base samples with TNLS targets,
+writes `CANNOT_EXCLUDE` pair reports, and groups compatible TNLS profiles into
+families. Run it with `uv run python -m src.modules.TNLS.verification`.
+
+- [Verification overview and CLI](verification/)
+- [Verification matching guide](verification/matching-guide.md)
+- `verification/comparison.py`: one-base-to-many-target matching engine
+- `verification/analysis.py`: comparison orchestration and report generation
+- `verification/utils.py`: shared JSON and variant-comparison helpers
 
 ## Key Concepts
 
@@ -45,7 +48,7 @@ The TNLS module (`src/modules/TNLS/`) provides utilities for processing mtDNA va
 
 ### Family Grouping by mtDNA Profile
 
-`compare_TNLS_HCLS.py` uses the indexed `family_profiles.py` implementation to
+`verification/analysis.py` uses the indexed `family_profiles.py` implementation to
 group TNLS target samples by identical mtDNA profile (IUPAC-tolerant, over the
 common ≥150 bp overlap; transitive via union-find). Exact profiles are collapsed
 before overlap-restricted canonical profiles are compared, avoiding exhaustive

@@ -240,12 +240,9 @@ Every tool module sits in the same position in the overall pipeline:
     +-- etl.py                   # Pure ETL: Tracy decompose JSON → Sample
     +-- pipeline.py              # Batch orchestration, parallel processing + CLI entry point
     +-- preprocessing.py         # AB1 → Tracy decompose (subprocess)
-    +-- quality_control.py       # Per-trace noise metrics, ranges, and report records
-    +-- noise_mask.py            # Per-trace noisy-range masking and flag recomputation
     +-- transforms.py            # Position-specific, polyC, and strand transforms
-    +-- utils.py                 # Alignment, coordinate, primer, and peak helpers
-    docs/tools/tracy.md          # Pipeline and API documentation
-    docs/tools/tracy-noise-qc.md # QC metrics, reports, and masking behavior
+    +-- utils.py                 # Primer detection, heteroplasmy, peak validation
+    docs/tools/tracy.md          # Already exists
 
 ### BLASTn (conforms)
 

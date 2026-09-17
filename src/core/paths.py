@@ -30,7 +30,7 @@ class OutputPaths:
       intermediate JSONs like ``HV1_{LID}.json`` and ``HV2-3_{LID}.json``)
     - ``preprocess_dir`` — for tool-specific preprocessing artifacts
       (``.blastn``, ``.fasta``, ``.fastq``, ``.quality`` for BLASTn;
-      (per-sample ``.align``, ``.decomp``, ``.bcf``, and ``qc_report.json`` for Tracy)
+      ``.align``, ``.decomp``, ``.bcf`` for Tracy)
 
     Usage::
 

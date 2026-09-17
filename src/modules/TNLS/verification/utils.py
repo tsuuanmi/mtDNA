@@ -234,8 +234,8 @@ def get_range_details(ranges: list[list[int]]) -> list[str]:
 
         [[16024, 16365]]  ->  ["HV1: 16024-16365"]
 
-    Used by ``compare_TNLS_HCLS_stats`` to produce the ``overlap_details``
-    column in the output TSV.
+    Used by :mod:`src.modules.TNLS.verification.analysis` to produce the
+    ``overlap_details`` column in the output TSV.
     """
     hv_ranges = {"HV1": (16024, 16365), "HV2": (73, 340), "HV3": (438, 576)}
     labelled = []

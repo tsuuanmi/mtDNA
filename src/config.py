@@ -13,7 +13,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from loguru import logger
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, field_validator
 from pydantic.types import DirectoryPath, FilePath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -28,49 +28,8 @@ class TracySettings(BaseSettings):
     min_peak_value: int = Field(default=125, description="Minimum peak height for variant calling")
     heteroplasmy_threshold: float = Field(default=0.8, description="Minimum heteroplasmy ratio for detection")
     max_workers: int | None = Field(default=None, description="Max parallel workers (default: system CPU count)")
-    qc_enabled: bool = Field(default=True, description="Enable optional per-trace evidence QC")
-    signal_noise_enabled: bool = Field(default=True, description="Evaluate signal-noise evidence")
-    polyc_enabled: bool = Field(default=False, description="Evaluate directional polyC and homopolymer evidence")
-    read_edge_enabled: bool = Field(default=True, description="Report exploratory read-edge uncertainty")
-    noise_mask_enabled: bool = Field(default=True, description="Exclude variants and coverage in likely-noisy ranges")
-    noise_window_size: int = Field(default=15, ge=10, le=20, description="Bases per trace-noise window")
-    noise_window_step: int = Field(default=5, ge=1, le=20, description="Bases between trace-noise windows")
-    noise_min_valid_bases: int = Field(default=10, ge=1, le=20, description="Valid bases required per window")
-    noise_min_supporting_windows: int = Field(
-        default=2,
-        ge=2,
-        description="Likely-noisy windows required to create a mask range",
-    )
-    noise_snr_threshold: float = Field(default=3.0, gt=0, description="Minimum acceptable peak SNR")
-    noise_low_snr_threshold: float = Field(default=2.0, gt=0, description="Strong low-end SNR threshold")
-    noise_purity_threshold: float = Field(default=0.60, ge=0, le=1, description="Minimum acceptable signal purity")
-    noise_background_threshold: float = Field(default=0.35, ge=0, description="Maximum background-to-signal ratio")
-    noise_second_peak_threshold: float = Field(default=0.50, ge=0, description="Maximum second-to-first peak ratio")
-    noise_quality_threshold: float = Field(default=20.0, ge=0, description="Minimum acceptable basecall quality")
-    noise_signal_threshold: float = Field(default=75.0, ge=0, description="Minimum acceptable peak signal")
-    noise_bad_base_fraction: float = Field(default=0.40, ge=0, le=1, description="Fraction required for noisy status")
-    noise_suspicious_base_fraction: float = Field(
-        default=0.20,
-        ge=0,
-        le=1,
-        description="Fraction required for suspicious status",
-    )
 
     model_config = SettingsConfigDict(env_prefix="MTDNA_TRACY_", extra="forbid")
-
-    @model_validator(mode="after")
-    def validate_noise_windows(self) -> "TracySettings":
-        """Ensure window settings form usable overlapping windows."""
-        if self.noise_window_step > self.noise_window_size:
-            msg = "noise_window_step cannot exceed noise_window_size"
-            raise ValueError(msg)
-        if self.noise_min_valid_bases > self.noise_window_size:
-            msg = "noise_min_valid_bases cannot exceed noise_window_size"
-            raise ValueError(msg)
-        if self.noise_suspicious_base_fraction > self.noise_bad_base_fraction:
-            msg = "noise_suspicious_base_fraction cannot exceed noise_bad_base_fraction"
-            raise ValueError(msg)
-        return self
 
 
 class BlastnSettings(BaseSettings):

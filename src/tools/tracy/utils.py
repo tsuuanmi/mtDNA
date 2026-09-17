@@ -1,8 +1,8 @@
-"""Shared Tracy helpers for trace data, primer detection, and variant filtering.
+"""Tracy-specific utilities — primer detection, heteroplasmy, peak validation.
 
-This module has no file I/O and no Sample/Variant dependency. It is the single
-source of truth for Tracy alignment normalization, peak extraction, filename
-parsing, and variant filtering helpers.
+Pure functions only: no file I/O, no side effects, no Sample/Variant dependency.
+This module is the single source of truth for Tracy filename parsing, primer type
+detection, and variant filtering helpers.
 """
 
 from typing import Any, NamedTuple
@@ -10,7 +10,6 @@ from typing import Any, NamedTuple
 from loguru import logger
 
 from src.config import get_settings
-from src.core.polyc import is_hv1_polyc_created
 from src.core.variants import nucleotide_to_iupac, pos_base
 
 # ---------------------------------------------------------------------------
@@ -46,32 +45,6 @@ NUM_PEAK_CHANNELS = 4
 # ---------------------------------------------------------------------------
 
 
-class AlignmentBounds(NamedTuple):
-    """Trimmed bounds and edge gaps for a Tracy alignment."""
-
-    alt_start_dash: int
-    alt_end_dash: int
-    ref_start_dash: int
-    ref_end_dash: int
-    start_index: int | None
-    end_index: int | None
-
-
-class PeakData(NamedTuple):
-    """A/C/G/T peak heights and optional basecall quality."""
-
-    a: float | None
-    c: float | None
-    g: float | None
-    t: float | None
-    quality: float | None
-
-    @property
-    def channels(self) -> tuple[float | None, float | None, float | None, float | None]:
-        """Return peak heights in A/C/G/T order."""
-        return self.a, self.c, self.g, self.t
-
-
 class PrimerTypeInfo(NamedTuple):
     """Primer type information detected from a trace filename.
 
@@ -101,128 +74,6 @@ def detect_primer_type(filename: str) -> PrimerTypeInfo:
         is_hv1f=any(p in filename for p in ["HV1F"]),
         is_hv1r=any(p in filename for p in ["HV1R"]),
     )
-
-
-# ---------------------------------------------------------------------------
-# Trace alignment helpers
-# ---------------------------------------------------------------------------
-
-
-def normalize_ref_positions(data: dict[str, Any]) -> int:
-    """Normalize scalar Tracy ``ref1pos`` to a per-column position array.
-
-    Tracy outputs encountered by this pipeline use either a scalar starting
-    position or an array. The input mapping is updated in place so all Tracy
-    consumers use one representation. The scalar start position is returned.
-    """
-    ref1pos = data["ref1pos"]
-    if isinstance(ref1pos, int):
-        start = ref1pos
-        positions: list[int] = []
-        current = start
-        for base in data["ref1align"]:
-            if base == "-":
-                positions.append(current - 1 if current > start else start)
-            else:
-                positions.append(current)
-                current += 1
-        data["ref1pos"] = positions
-        return start
-    if not isinstance(ref1pos, list):
-        msg = "Tracy ref1pos must be an integer or list"
-        raise TypeError(msg)
-    return int(ref1pos[0]) if ref1pos else 0
-
-
-def alignment_bounds(data: dict[str, Any]) -> AlignmentBounds:
-    """Return the usable alignment bounds after trimming edge gaps."""
-    alt_align = data["alt1align"]
-    ref_align = data["ref1align"]
-    if not isinstance(alt_align, str) or not isinstance(ref_align, str):
-        msg = "Tracy alignments must be strings"
-        raise TypeError(msg)
-    if len(alt_align) != len(ref_align):
-        msg = "Tracy reference and alternate alignments must have equal lengths"
-        raise ValueError(msg)
-
-    alt_start_dash = len(alt_align) - len(alt_align.lstrip("-"))
-    alt_end_dash = len(alt_align) - len(alt_align.rstrip("-"))
-    ref_start_dash = len(ref_align) - len(ref_align.lstrip("-"))
-    ref_end_dash = len(ref_align) - len(ref_align.rstrip("-"))
-    trim_left = max(alt_start_dash, ref_start_dash)
-    trim_right = max(alt_end_dash, ref_end_dash)
-    end_index = len(alt_align) - trim_right - 1
-    if trim_left > end_index:
-        start_index: int | None = None
-        usable_end: int | None = None
-    else:
-        start_index = trim_left
-        usable_end = end_index
-    return AlignmentBounds(
-        alt_start_dash,
-        alt_end_dash,
-        ref_start_dash,
-        ref_end_dash,
-        start_index,
-        usable_end,
-    )
-
-
-def extract_peak_data(data: dict[str, Any], peak_index: int) -> PeakData:
-    """Return A/C/G/T peak heights and quality for one basecall index."""
-    try:
-        basecall_pos = int(data["basecallPos"][peak_index])
-        channels = [float(data[key][basecall_pos]) for key in ("peakA", "peakC", "peakG", "peakT")]
-    except (IndexError, KeyError, TypeError, ValueError):
-        return PeakData(None, None, None, None, None)
-
-    try:
-        quality = float(data["basecallQual"][peak_index])
-    except (IndexError, KeyError, TypeError, ValueError):
-        quality = None
-    return PeakData(channels[0], channels[1], channels[2], channels[3], quality)
-
-
-def alignment_reference_position(
-    alignment_index: int,
-    *,
-    ref_start: int,
-    ref_align: str,
-    is_reverse: bool,
-) -> int:
-    """Map an alignment column to its pre-insertion-format reference position.
-
-    Reference gaps map to the following base so insertion formatting can anchor
-    them to the preceding canonical position. Counting reference bases rather
-    than raw columns keeps coordinates correct across internal indels.
-    """
-    if not 0 <= alignment_index < len(ref_align):
-        msg = f"Alignment index {alignment_index} is outside the reference alignment"
-        raise IndexError(msg)
-    if is_reverse:
-        suffix = ref_align[alignment_index:]
-        offset = sum(base != "-" for base in suffix)
-        return ref_start + offset - (1 if ref_align[alignment_index] != "-" else 0)
-    prefix = ref_align[: alignment_index + 1]
-    offset = sum(base != "-" for base in prefix)
-    return ref_start + offset - (1 if ref_align[alignment_index] != "-" else 0)
-
-
-def variant_overlaps_range(
-    position: int | str,
-    ref: str,
-    range_start: int,
-    range_end: int,
-) -> bool:
-    """Return whether a canonical variant overlaps an inclusive reference range.
-
-    Insertions use their decimal-position anchor. Other variants cover the
-    reference span represented by ``ref``; this includes multi-base deletions.
-    """
-    start, end = sorted((range_start, range_end))
-    variant_start = pos_base(position)
-    variant_end = variant_start if ref == "-" else variant_start + max(len(ref), 1) - 1
-    return variant_start <= end and variant_end >= start
 
 
 # ---------------------------------------------------------------------------
@@ -398,7 +249,7 @@ def _check_snp_conditions(pos_int: int, seq: str, ref: str) -> _ConditionChecker
         results.append((True, "has_524_T"))
     if pos_int == POS_523 and seq == "C" and ref == "A":
         results.append((True, "has_523_A_C"))
-    if is_hv1_polyc_created(pos_int, seq):
+    if pos_int == POS_16189 and seq == "C":
         results.append((True, "has_16189_T_C"))
     return results
 

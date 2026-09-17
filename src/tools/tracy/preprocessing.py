@@ -11,7 +11,7 @@ produces the same output (assuming Tracy itself is deterministic).
 import shutil
 import subprocess
 from pathlib import Path
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 from loguru import logger
 
@@ -33,12 +33,10 @@ def decompose_sample(
     ref_path: str,
     *,
     config: DecomposeConfig | None = None,
-) -> tuple[Path, ...]:
-    """Run Tracy decompose and return JSON files produced in this run.
+) -> Path:
+    """Run Tracy decompose on all AB1 files for a sample.
 
-    Validates the binary path with ``shutil.which()`` before execution. Returning
-    explicit outputs prevents callers from consuming stale files in the sample
-    directory.
+    Validates the binary path with ``shutil.which()`` before execution.
     """
     if config is None:
         config = DecomposeConfig(
@@ -52,11 +50,11 @@ def decompose_sample(
     sample_output_dir.mkdir(parents=True, exist_ok=True)
 
     # Find AB1 files for this sample
-    ab1_files = sorted(str(path) for path in input_path.iterdir() if path.suffix == ".ab1" and sample in path.name)
+    ab1_files = [str(f) for f in input_path.iterdir() if f.suffix == ".ab1" and sample in f.name]
 
     if not ab1_files:
         logger.warning("No AB1 files found for sample {}", sample)
-        return ()
+        return sample_output_dir
 
     tracy_binary = get_settings().tools.tracy
 
@@ -64,15 +62,14 @@ def decompose_sample(
     tracy_path = shutil.which(str(tracy_binary))
     if tracy_path is None:
         logger.error("Tracy binary not found: {}", tracy_binary)
-        return ()
+        return sample_output_dir
 
-    json_outputs: list[Path] = []
     # Process each AB1 file
     for ab1_file in ab1_files:
         basename = Path(ab1_file).stem
         output_prefix = str(sample_output_dir / basename)
 
-        command: list[str] = [
+        command: list[str | Any] = [
             tracy_path,
             "decompose",
             ab1_file,
@@ -95,12 +92,5 @@ def decompose_sample(
             logger.error("Tracy decompose failed for {}", basename)
             if result.stderr:
                 logger.error("Error: {}", result.stderr)
-            continue
 
-        json_output = Path(f"{output_prefix}.json")
-        if json_output.is_file():
-            json_outputs.append(json_output)
-        else:
-            logger.error("Tracy decompose did not produce {}", json_output)
-
-    return tuple(json_outputs)
+    return sample_output_dir

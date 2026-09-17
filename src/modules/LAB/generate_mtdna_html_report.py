@@ -7,6 +7,7 @@ using concordance results from compare_sequencher.py output.
 """
 
 import sys
+import warnings
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -16,13 +17,19 @@ import pandas as pd
 from loguru import logger
 from openpyxl.styles import Alignment, Border, Font, Side
 
+warnings.filterwarnings(
+    "ignore",
+    message="Data Validation extension is not supported and will be removed",
+    category=UserWarning,
+)
+
 # Default signature names (pre-filled as per template)
 DEFAULT_SIGNATURES = {
     "nguoi_thuc_hien": "Triệu Thị Nguyệt",
-    "nguoi_kiem_tra": "Đặng Hữu Điện",
+    "nguoi_kiem_tra": "Nguyễn Ngọc Nam",
     "nguoi_phan_tich_1": "Nguyễn Thị Phương",
     "nguoi_phan_tich_2": "Trần Nhật Tân",
-    "nguoi_phe_duyet": "Nguyễn Ngọc Nam",
+    "nguoi_phe_duyet": "Đặng Hữu Điện",
 }
 
 
@@ -46,6 +53,13 @@ def _parse_date_from_row(row: pd.Series, col: str, batch_suffix: str, date_label
     else:
         return formatted
 
+
+
+def _tracking_batch_matches(batch_name: str, batch_suffix: str) -> bool:
+    """Match an exact batch name or a legacy date-based tracking identifier."""
+    if batch_name == batch_suffix:
+        return True
+    return not batch_suffix.startswith("MS_") and batch_name.endswith(f"_{batch_suffix}")
 
 
 def load_tracking_tsv(tsv_path: Path, batch_suffix: str) -> tuple[str | None, str | None]:
@@ -76,10 +90,12 @@ def load_tracking_tsv(tsv_path: Path, batch_suffix: str) -> tuple[str | None, st
             logger.warning(f"Column '{batch_col}' not found in tracking TSV")
             return None, None
 
-        # Search for the batch
+        # Search for the batch. Date-based rows may retain their full batch identifier,
+        # while MS batches require an exact match.
         for _, row in df.iterrows():
             batch_name = str(row[batch_col]).strip() if pd.notna(row[batch_col]) else ""  # type: ignore[reportGeneralTypeIssues]
-            if batch_name == batch_suffix:
+            if _tracking_batch_matches(batch_name, batch_suffix):
+                logger.info(f"Matched tracking batch {batch_name} to report batch {batch_suffix}")
                 # Parse sequence released date
                 sequence_date_formatted = (
                     _parse_date_from_row(row, sequence_col, batch_suffix, "sequence date")
@@ -161,7 +177,7 @@ def _find_rerun_columns(df: pd.DataFrame) -> tuple[str | None, str | None, str |
 
     for col in df.columns:
         col_lower = col.lower().strip()
-        if col_lower == "id":
+        if col_lower == "id" or (col_lower == "sample .1" and id_col is None):
             id_col = col
         elif col_lower == "issues":
             issues_col = col
@@ -410,7 +426,7 @@ th {{
 
 <div class="header-info">
     <span>Tên XN: Giải trình tự ADN ty thể</span>
-    <span>Phương pháp: XN-QTKT.011.01</span>
+    <span>Phương pháp: XN-QTKT.011.02</span>
 </div>
 
 <table>
@@ -538,7 +554,7 @@ def generate_excel_report(  # noqa: PLR0915
 
         # Add header info (row 2-3)
         worksheet["A3"] = "Tên XN: Giải trình tự ADN ty thể"
-        worksheet["F3"] = "Phương pháp: XN-QTKT.011.01"
+        worksheet["F3"] = "Phương pháp: XN-QTKT.011.02"
 
         # Apply border to data table
         for row in worksheet.iter_rows(min_row=5, max_row=5 + len(df), min_col=1, max_col=10):

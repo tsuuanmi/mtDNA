@@ -209,14 +209,6 @@ Two-level flag system:
 
 **SampleFlagger** assigns severity levels (Critical/High/Medium/Low) and pattern-based flags (309.1 insertion, 310 variant, 460 variant, polyC region, nomenclature issues, etc.).
 
-### 2.3.1 Directional polyC Policy (`src/core/polyc.py`)
-
-`polyc.py` centralizes tool-agnostic directional policy: HV2 forward exclusion
-at `>=304` and reverse exclusion at `<=315`, plus 16189-C-triggered HV1
-forward/reverse suppression. Its helpers own classification, exclusion
-decisions, and reasons; tools only map native primer metadata to a direction
-and apply results to already-called candidates.
-
 ### 2.4 Sample I/O (`src/core/sample.py`) and Batch (`src/core/batch.py`)
 
 Sample serialization/deserialization lives in `src/core/sample.py`:
@@ -293,10 +285,8 @@ Direct variant calling from AB1 files using the Tracy tool. Decomposes AB1 files
 | `src/tools/tracy/etl.py` | Pure ETL: Tracy decompose JSON → Sample |
 | `src/tools/tracy/pipeline.py` | Batch orchestration, parallel processing via ProcessPoolExecutor |
 | `src/tools/tracy/preprocessing.py` | AB1 → Tracy decompose (subprocess) |
-| `src/tools/tracy/quality_control.py` | Per-trace peak-noise metrics, window classification, and QC report records |
-| `src/tools/tracy/noise_mask.py` | Per-trace likely-noisy-range masking and flag recomputation |
 | `src/tools/tracy/transforms.py` | Position-specific, polyC, and strand variant transformations |
-| `src/tools/tracy/utils.py` | Alignment, coordinate, primer, and peak helpers |
+| `src/tools/tracy/utils.py` | Primer detection, heteroplasmy, peak validation |
 | `src/tools/tracy/__init__.py` | Empty; import `process` from etl.py, `process_batch` from pipeline.py |
 
 **Public API:**
@@ -304,7 +294,7 @@ Direct variant calling from AB1 files using the Tracy tool. Decomposes AB1 files
 - `process(sample_id, input_path, *, ref_seq, ...) → Sample` — Pure ETL for a single Tracy decompose JSON file
 - `process_batch(input_dir, output_dir, options) → dict[str, Sample]` — Batch orchestration with parallel processing
 
-**Configuration:** Tracy parameters loaded from `get_settings().tracy` (Pydantic settings with `MTDNA_TRACY_` env prefix). Per-trace noise QC evaluates overlapping peak-metric windows after decomposition. By default, variants and the same coverage spans are removed from the originating trace before forward/reverse traces are combined; a clean mate trace can retain coverage for the final LID profile. `MTDNA_TRACY_NOISE_MASK_ENABLED=false` retains calls and intervals while reports remain enabled. See [Tracy Noise QC](tools/tracy-noise-qc.md).
+**Configuration:** Tracy parameters loaded from `get_settings().tracy` (Pydantic settings with `MTDNA_TRACY_` env prefix).
 
 ### 3.3 BLASTn (`src/tools/blastn/pipeline.py`)
 
@@ -371,7 +361,7 @@ Pipeline: `preprocessing.py` (AB1 → BLASTN TSV) → `etl.py` (TSV → Sample) 
 | File | Purpose |
 |------|---------|
 | `query_multi_filters.py` | Multi-filter statistical queries |
-| `merge.py` | Merge data and per-batch results |
+| `merge/` | Merge data and per-batch results into consolidated TSV/JSON exports (cached, concurrent NAS metadata reads) |
 | `blind_copy.py` | Blind-copy AB1/FASTA files and generate blinded metrics JSON |
 | `add_variants_to_samples.py` | Add variant data and analyzed intervals to the sample mapping TSV |
 | `add_variants_to_metadata.py` | Add variant data to metadata |
@@ -544,7 +534,6 @@ The docs are organized to match the current high-level `src/` tree:
 | `src/core/models.py` | [core/models.md](core/models.md) | Pydantic data models (Position, Variant, Sample, etc.) |
 | `src/core/mtdna_merger.py` | [core/mtdna_merger.md](core/mtdna_merger.md) | Multi-tool mtDNA profile merger |
 | `src/core/paths.py` | [core/paths.md](core/paths.md) | Centralized output path helpers |
-| `src/core/polyc.py` | [core/polyc.md](core/polyc.md) | Shared directional HV1/HV2 polyC policy |
 | `src/core/regenerate.py` | [core/regenerate.md](core/regenerate.md) | Regenerate gate and final JSON filtering |
 | `src/core/region.py` | [core/region.md](core/region.md) | Per-region JSON I/O and range/interval QC |
 | `src/core/sample.py` | [core/sample.md](core/sample.md) | Sample serialization and `generate_sequence()` |
@@ -554,7 +543,7 @@ The docs are organized to match the current high-level `src/` tree:
 | `src/tools/tracy/` | [tools/tracy.md](tools/tracy.md) | Tracy variant caller (standard module) |
 | `src/tools/sequencher/` | [tools/sequencher.md](tools/sequencher.md) | Sequencher ETL pipeline |
 | `src/tools/mutation_surveyor/` | [tools/mutation_surveyor.md](tools/mutation_surveyor.md) | Mutation Surveyor pipeline and step scripts |
-| `src/modules/LAB/` | [modules/LAB/generate_mtdna_html_report.md](modules/LAB/generate_mtdna_html_report.md) | LAB report/manual workflow helpers |
+| `src/modules/LAB/` | [modules/LAB.md](modules/LAB.md) | LAB report/manual workflow helpers |
 | `src/modules/NGS/` | [modules/NGS/README.md](modules/NGS/README.md) | NGS comparison, merging, and variant-frequency utilities |
 | `src/modules/TNLS/` | [modules/TNLS/README.md](modules/TNLS/README.md) | TNLS metadata, kinship, and verification utilities |
 | `src/modules/quality_control/pc_ntc.py` | — | Positive Control / NTC validation |

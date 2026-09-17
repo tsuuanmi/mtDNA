@@ -5,7 +5,7 @@ flag reasons + severity levels (``SampleFlagger.analyze``/``classify``)
 from a normalized variant set. Most flags are *presence* flags tied to a
 specific variant; the ``"No 315.1 variant"`` flag is a special *absence*
 check (a variant missing from the list) and is derived from the variant
-set + coverage intervals via :func:`recompute_no_315_1_flag`.
+set + coverage intervals via :func:`recompute_sample_flags`.
 """
 
 import re
@@ -767,47 +767,6 @@ def deduplicate_sample_flags(
         if drop_region_aggregate and flag.startswith("16180-16193 region"):
             continue
         result.append(flag)
-    return result
-
-
-# ---------------------------------------------------------------------------
-def recompute_no_315_1_flag(
-    sample_flags: list[str],
-    variants: Variant | dict | list,
-    intervals: dict[str, list[list[int]]] | None,
-) -> list[str]:
-    """Recompute the "No 315.1 variant" absence flag from a variant list.
-
-    ``"No 315.1 variant"`` is a special *absence* flag: unlike per-variant
-    flags it reports a variant MISSING from the list, so it must be derived
-    from the actual variant set rather than trusted from per-file/per-region
-    ETL output (which can be stale — e.g. a per-file read that covered
-    position 315 but did not call 315.1C, or a per-region JSON that would
-    otherwise inherit the parent sample's flag). It is called at JSON-write
-    time (``sample_to_dict``) so each output JSON — the combined 3-region
-    JSON and each per-region (HV1 / HV2-3) JSON — reports the flag against
-    its own variant set + coverage intervals.
-
-    Drops any existing ``"No 315.1 variant"`` and re-derives it via
-    :meth:`SampleFlagger.check_no_315_1` (region-level gating: fires when
-    315.1C is absent and the region containing position 315 — HV2 — was
-    analyzed). ``intervals=None`` assumes full coverage (legacy behavior);
-    an empty intervals dict (no region analyzed) does not flag.
-
-    Args:
-        sample_flags: Incoming sample-level flag reasons (may already carry
-            a stale "No 315.1 variant").
-        variants: Variant set to evaluate (Variant objects, dicts, or a list).
-        intervals: Coverage intervals keyed by region, or ``None`` to assume
-            full coverage.
-
-    Returns:
-        Corrected sample-level flag list with the absence flag recomputed.
-    """
-    result = [f for f in sample_flags if f != "No 315.1 variant"]
-    flagger = SampleFlagger(variants, intervals=intervals)
-    if flagger.check_no_315_1():
-        result.append("No 315.1 variant")
     return result
 
 

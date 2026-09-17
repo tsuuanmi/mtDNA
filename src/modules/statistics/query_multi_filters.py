@@ -95,36 +95,42 @@ def format_variants(sample: dict[str, Any]) -> str:
     return " ".join(t for _, t in tokens) or "None"
 
 
-logger.info("Loading merged_statistics.json …")
-with Path(INPUT_JSON).open(encoding="utf-8") as fh:
-    data = json.load(fh)
-logger.info(f"  Total samples: {len(data):,}\n")
+def main() -> None:
+    """Run every configured query and write one TSV per query to the CWD."""
+    logger.info("Loading merged_statistics.json …")
+    with Path(INPUT_JSON).open(encoding="utf-8") as fh:
+        data = json.load(fh)
+    logger.info(f"  Total samples: {len(data):,}\n")
 
-for filename, required, windows in QUERIES:
-    rows = []
-    for sid, sample in data.items():
-        in_window = variants_in_windows(sample, windows)
-        if not required.issubset(in_window) or (in_window - required):
-            continue
+    for filename, required, windows in QUERIES:
+        rows = []
+        for sid, sample in data.items():
+            in_window = variants_in_windows(sample, windows)
+            if not required.issubset(in_window) or (in_window - required):
+                continue
 
-        rows.append(
-            {
-                "Sample_ID": sid,
-                "Batch": sample.get("batch", ""),
-                "Analyzed_Range": format_analyzed_range(sample.get("intervals", {})),
-                "Variants": format_variants(sample),
-            },
-        )
+            rows.append(
+                {
+                    "Sample_ID": sid,
+                    "Batch": sample.get("batch", ""),
+                    "Analyzed_Range": format_analyzed_range(sample.get("intervals", {})),
+                    "Variants": format_variants(sample),
+                },
+            )
 
-    rows.sort(key=lambda r: (r["Batch"], r["Sample_ID"]))
+        rows.sort(key=lambda r: (r["Batch"], r["Sample_ID"]))
 
-    with Path(filename).open("w", newline="", encoding="utf-8") as fh:
-        writer = csv.DictWriter(fh, fieldnames=FIELDS, delimiter="\t")
-        writer.writeheader()
-        writer.writerows(rows)
+        with Path(filename).open("w", newline="", encoding="utf-8") as fh:
+            writer = csv.DictWriter(fh, fieldnames=FIELDS, delimiter="\t")
+            writer.writeheader()
+            writer.writerows(rows)
 
-    windows_str = " + ".join(f"{s}-{e}" for s, e in windows)
-    pct = len(rows) / len(data) * 100
-    logger.info(f"  {filename:20s}  {len(rows):>5,} samples  ({pct:.4f}%)  window: {windows_str}")
+        windows_str = " + ".join(f"{s}-{e}" for s, e in windows)
+        pct = len(rows) / len(data) * 100
+        logger.info(f"  {filename:20s}  {len(rows):>5,} samples  ({pct:.4f}%)  window: {windows_str}")
 
-logger.info("\nDone.")
+    logger.info("\nDone.")
+
+
+if __name__ == "__main__":
+    main()

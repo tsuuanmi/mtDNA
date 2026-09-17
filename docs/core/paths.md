@@ -28,7 +28,7 @@ Constructs paths under a batch/tool output base directory.
 | `base_dir` | `<base_dir>` | Root output directory passed by the caller |
 | `json_dir` | `<base_dir>/json` | Standard batch JSON output from `Batch.write()` |
 | `regions_dir` | `<base_dir>/regions` | Per-region intermediate JSONs from `write_region_jsons()` |
-| `preprocess_dir` | `<base_dir>/preprocess` | Tool-specific preprocessing artifacts; Tracy stores each trace set and its `qc_report.json` under `<sample_id>/` |
+| `preprocess_dir` | `<base_dir>/preprocess` | Tool-specific preprocessing artifacts |
 
 ### `create_dirs() -> None`
 
@@ -54,7 +54,7 @@ Tool pipelines should pass these subdirectories to the lower-level writers:
 
 - `Batch.write(paths.json_dir, batch_id, nest_batch_id=False)`
 - `write_region_jsons(sample, paths.regions_dir, ...)`
-- preprocessing output goes under `paths.preprocess_dir`; Tracy writes artifacts and `qc_report.json` in `paths.preprocess_dir / <sample_id>`
+- preprocessing output goes under `paths.preprocess_dir`
 
 This avoids mixing final JSON, per-region intermediate files, and preprocessing artifacts in one directory.
 

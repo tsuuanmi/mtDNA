@@ -14,9 +14,12 @@ from src.tools.tracy.utils import (
     NUM_PEAK_CHANNELS,
     POS_248,
     POS_250,
+    POS_300,
     POS_309,
     POS_310,
+    POS_315,
     POS_316,
+    POS_320,
     POS_456,
     POS_459,
     POS_513,
@@ -24,12 +27,11 @@ from src.tools.tracy.utils import (
     POS_515,
     POS_523,
     POS_524,
+    POS_525,
     POS_16189,
     POS_16193,
     PrimerTypeInfo,
-    alignment_reference_position,
     detect_heteroplasmy,
-    extract_peak_data,
 )
 
 # ---------------------------------------------------------------------------
@@ -52,10 +54,41 @@ class _PositionParams(NamedTuple):
 
     primers: PrimerTypeInfo
     ref1pos: float
-    ref_align: str
+    ref_align_len: int
+    ref_end_dash: int
     filename: str
     sample: str | None
     heteroplasmy_threshold: float
+
+
+# ---------------------------------------------------------------------------
+# Helper: extract peak data
+# ---------------------------------------------------------------------------
+
+
+def _extract_peak_data(
+    data: dict[str, Any],
+    peak_index: int,
+) -> tuple[float | None, float | None, float | None, float | None, float | None]:
+    """Extract peak data (A, C, G, T) and quality at given index.
+
+    Uses ``basecallPos[peak_index]`` directly; after ``_normalize_ref1pos()``
+    converts Tracy >= 0.7.8 integer ``ref1pos`` to a position array, direct
+    indexing is equivalent to ``peak_index = i - deletions``.
+    """
+    try:
+        basecall_pos = data["basecallPos"][peak_index]
+    except (IndexError, KeyError) as e:
+        logger.warning("Index out of range when accessing peak data at index {}: {}", peak_index, e)
+        return (None, None, None, None, None)
+
+    return (
+        data["peakA"][basecall_pos],
+        data["peakC"][basecall_pos],
+        data["peakG"][basecall_pos],
+        data["peakT"][basecall_pos],
+        data["basecallQual"][peak_index],
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -66,8 +99,8 @@ class _PositionParams(NamedTuple):
 def _find_alignment_index(data: dict[str, Any], pos_float: float) -> int | None:
     """Find the alignment index closest to a target genomic position.
 
-    ``ref1pos`` may be an int (starting position) or a normalized per-column
-    position list.
+    ``ref1pos`` may be an int (starting position, Tracy < 0.7.8) or a list
+    (position array, Tracy >= 0.7.8 after ``_normalize_ref1pos()``).
     """
     if isinstance(data["ref1pos"], int):
         ref_start = data["ref1pos"]
@@ -97,21 +130,6 @@ _CREATED_FIXED_PEAKS: list[float] = [1000, 10, 10, 10]
 _CREATED_FIXED_QUALITY = 50
 
 
-def _derived_provenance() -> dict[str, Any]:
-    """Explicitly distinguish canonical placeholders from measured evidence."""
-    return {
-        "evidence_kind": "derived",
-        "lineage": "unknown",
-        "source_candidate_ids": [],
-        "source_positions": [],
-        "original_pos": None,
-        "original_ref": None,
-        "original_seq": None,
-        "index": None,
-        "peak_index": None,
-    }
-
-
 def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) -> dict[str, Any] | None:
     """Create a new variant dict at a given position.
 
@@ -139,8 +157,9 @@ def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) ->
             "ref": ref_base,
             "seq": "-",
             "peaks": list(_CREATED_FIXED_PEAKS),
+            "index": pos_int,
+            "peak_index": pos_int,
             "quality": _CREATED_FIXED_QUALITY,
-            **_derived_provenance(),
         }
 
     # HV2 polyC insertion (309.x / 315.x)
@@ -150,8 +169,9 @@ def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) ->
             "ref": "-",
             "seq": "C",
             "peaks": list(_CREATED_FIXED_PEAKS),
+            "index": pos_int,
+            "peak_index": pos_int,
             "quality": _CREATED_FIXED_QUALITY,
-            **_derived_provenance(),
         }
 
     # SNP: look up the alignment column closest to pos for peak data
@@ -159,7 +179,7 @@ def _create_variant(pos: int | str, variant_type: str, params: _CreateParams) ->
     best_idx = _find_alignment_index(data, float(pos_int))
     if best_idx is None:
         return None
-    peak_a, peak_c, peak_g, peak_t, quality = extract_peak_data(data, best_idx)
+    peak_a, peak_c, peak_g, peak_t, quality = _extract_peak_data(data, best_idx)
     peaks: list[float | None] = [peak_a, peak_c, peak_g, peak_t]
     if all(pk is None for pk in peaks):
         logger.warning("Cannot create SNP variant at position {}: no valid peak data", pos)
@@ -193,7 +213,7 @@ def _transform_pos_248(variant: dict[str, Any], conditions: dict[str, Any]) -> N
 def _transform_pos_309(variant: dict[str, Any], conditions: dict[str, Any]) -> None:
     """Handle 309 C>T with 310 T>C — mark for removal.
 
-    The 309 deletion variant is created separately in ``_apply_polyc_transforms``.
+    The 309 deletion variant is created separately in ``_apply_hv2_polyc_transforms``.
     """
     if conditions["has_309_C_T"] and conditions["has_310_T_C"]:
         variant["remove"] = True
@@ -306,16 +326,54 @@ _POSITION_TRANSFORMS: dict[int, list] = {
 
 
 # ---------------------------------------------------------------------------
-# PolyC transformations
+# HV2 polyC transformations
 # ---------------------------------------------------------------------------
 
 
-def _apply_polyc_insertion(variant: dict[str, Any]) -> None:
-    """Replace raw HV2 polyC insertions with canonical generated insertions."""
+def _apply_polyc_insertion(variant: dict[str, Any]) -> int:
+    """Return the HV2 polyC insertion delta for a variant.
+
+    PolyC insertions (309.x/315.x) are removed by primer removal and re-created
+    as canonical insertions by ``_create_polyc_insertions()``.
+    """
     pos_int = pos_base(variant["pos"])
-    if POS_309 <= pos_int <= POS_316 and variant["ref"] == "-" and not variant.get("keep", False):
+    if POS_309 <= pos_int <= POS_316 and variant["ref"] == "-":
+        return 1
+    return 0
+
+
+def _apply_polyc_primer_removal(
+    variant: dict[str, Any],
+    primers: PrimerTypeInfo,
+    conditions: dict[str, Any],
+) -> None:
+    """Remove HV2/HV1 polyC variants based on primer type.
+
+    For HV1, ``conditions["has_16189_T_C"]`` guards removal: variants at
+    pos > 16189 for HV1F and pos < 16189 for HV1R are removed.
+    """
+    pos_int = pos_base(variant["pos"])
+
+    # Remove HV2 polyC variants based on primer type
+    if POS_309 <= pos_int <= POS_320 and primers.is_hv2f_hv3f and not variant.get("keep", False):
         variant["remove"] = True
-        variant["reason"] = "HV2 polyC insertion normalized to canonical insertion"
+        variant["reason"] = "HV2 polyC region variant (HV2F/HV3F primers)"
+    if POS_300 <= pos_int <= POS_315 and primers.is_hv2r_hv3r and not variant.get("keep", False):
+        variant["remove"] = True
+        variant["reason"] = "HV2 polyC region variant (HV2R/HV3R primers)"
+
+    # Remove variants at position > 525 for HV2F/HV3F primers
+    if pos_int > POS_525 and primers.is_hv2f_hv3f:
+        variant["remove"] = True
+        variant["reason"] = "Variant in position >= 525 (HV2F/HV3F primers)"
+
+    # Remove HV1 polyC variants based on primer type and conditions
+    if conditions.get("has_16189_T_C") and (
+        (pos_int > POS_16189 and primers.is_hv1f) or (pos_int < POS_16189 and primers.is_hv1r)
+    ):
+        variant["remove"] = True
+        primer_type = "HV1F primer - forward" if primers.is_hv1f else "HV1R primer - reverse"
+        variant["reason"] = f"HV1 polyC region variant with 16189T>C present ({primer_type} sequencing artifact)"
 
 
 def _apply_conversion_deletions(
@@ -353,15 +411,19 @@ def _apply_conversion_deletions(
             additional_variants.append(deletion_524)
 
 
-def _apply_polyc_transforms(
+def _apply_hv2_polyc_transforms(
     variant: dict[str, Any],
     conditions: dict[str, Any],
+    primers: PrimerTypeInfo,
     params: _CreateParams,
     additional_variants: list[dict[str, Any]],
 ) -> None:
-    """Apply polyC-specific transformations to a variant."""
-    # Normalize raw polyC insertions; canonical insertions are created later.
+    """Apply HV2 polyC-specific transformations to a variant."""
+    # PolyC insertion logic (counting only; canonical insertions created later)
     _apply_polyc_insertion(variant)
+
+    # PolyC primer removal logic
+    _apply_polyc_primer_removal(variant, primers, conditions)
 
     # Special case: 16189 deletion with 16193 deletion
     if pos_base(variant["pos"]) == POS_16189 and conditions["has_16189_deletion"]:
@@ -432,8 +494,8 @@ def _create_polyc_insertions(
     Primer-agnostic: created for every file whose count > 0 (HV2F and HV3R both
     produce 315.1). The count is ``conditions["HV2_polyC"] + (1 if 309C>T & 310T>C)``.
     Each created insertion has ref="-", seq="C", quality=50, peaks=[1000,10,10,10],
-    with the decimal-string position preserved. Raw polyC insertions are marked
-    for canonical normalization before this runs, so this does not duplicate them.
+    with the decimal-string position preserved. The polyC insertions were already
+    removed by primer removal, so this does not duplicate them.
     """
     hv2_polyc = conditions["HV2_polyC"]
     if conditions["has_309_C_T"] and conditions["has_310_T_C"]:
@@ -444,8 +506,9 @@ def _create_polyc_insertions(
             "ref": "-",
             "seq": "C",
             "peaks": [1000, 10, 10, 10],
+            "index": pos_base(pos_str),
+            "peak_index": pos_base(pos_str),
             "quality": 50,
-            **_derived_provenance(),
         }
         for pos_str in _POLYC_PATTERNS.get(hv2_polyc, [])
     )
@@ -454,7 +517,7 @@ def _create_polyc_insertions(
 def apply_all_transformations(
     variants: list[dict[str, Any]],
     conditions: dict[str, Any],
-    primers: PrimerTypeInfo,  # noqa: ARG001 - retained for caller compatibility
+    primers: PrimerTypeInfo,
     params: _CreateParams,
 ) -> None:
     """Apply all variant transformations in-place.
@@ -473,14 +536,14 @@ def apply_all_transformations(
         # AC-repeat insertion remap (513.x → 524.x) — runs on decimal positions
         _apply_insertion_remap(variant, conditions)
 
-        # PolyC transforms
-        _apply_polyc_transforms(variant, conditions, params, additional_variants)
+        # HV2 polyC transforms
+        _apply_hv2_polyc_transforms(variant, conditions, primers, params, additional_variants)
 
     # Append any additional variants created by transforms
     variants.extend(additional_variants)
 
     # Create canonical HV2 polyC insertions from the HV2_polyC count. Runs after
-    # the transform loop. Directional evidence policy belongs to optional QC.
+    # the transform loop (primer removal already handled the polyC variants).
     _create_polyc_insertions(variants, conditions)
 
 
@@ -498,30 +561,23 @@ def _compute_file_intervals(
     if start_index is None or end_index is None:
         return {}
 
-    start_pos = alignment_reference_position(
-        start_index,
-        ref_start=int(params.ref1pos),
-        ref_align=params.ref_align,
-        is_reverse=params.primers.is_reverse,
-    )
-    end_pos = alignment_reference_position(
-        end_index,
-        ref_start=int(params.ref1pos),
-        ref_align=params.ref_align,
-        is_reverse=params.primers.is_reverse,
-    )
-    return {params.filename: [[min(start_pos, end_pos), max(start_pos, end_pos)]]}
+    if params.primers.is_forward or params.primers.is_hv2f:
+        start_pos = params.ref1pos + start_index
+        end_pos = params.ref1pos + end_index
+    elif params.primers.is_reverse:
+        start_pos = params.ref1pos + params.ref_align_len - params.ref_end_dash - 1 - end_index
+        end_pos = params.ref1pos + params.ref_align_len - params.ref_end_dash - 1 - start_index
+    else:
+        start_pos = params.ref1pos + start_index
+        end_pos = params.ref1pos + end_index
+
+    return {params.filename: [[int(start_pos), int(end_pos)]]}
 
 
-def _transform_reverse_strand(variant: dict[str, Any], params: _PositionParams) -> None:
+def _transform_reverse_strand(variant: dict[str, Any], params: _PositionParams, insertions: int) -> None:
     """Transform a variant for reverse strand: position, bases, and peaks."""
     variant["pos"] = normalize_position(
-        alignment_reference_position(
-            variant["index"],
-            ref_start=int(params.ref1pos),
-            ref_align=params.ref_align,
-            is_reverse=True,
-        ),
+        params.ref1pos + params.ref_align_len - params.ref_end_dash - 1 - variant["index"] - insertions,
     )
     # Transform bases to complements for reverse strand
     if variant["ref"] != "-":
@@ -555,8 +611,9 @@ def _redetect_heteroplasmy(variant: dict[str, Any], params: _PositionParams) -> 
 def _transform_variant_position(
     variant: dict[str, Any],
     params: _PositionParams,
+    insertions: int,
     insertion_count_at_pos: dict[int, int],
-) -> None:
+) -> int:
     """Transform a single variant's position and bases based on strand direction.
 
     Consecutive insertions at the same base position are numbered with a running
@@ -564,20 +621,14 @@ def _transform_variant_position(
     required by the AC-repeat insertion remap (513.x -> 524.x).
     """
     if params.primers.is_forward or params.primers.is_hv2f:
-        variant["pos"] = normalize_position(
-            alignment_reference_position(
-                variant["index"],
-                ref_start=int(params.ref1pos),
-                ref_align=params.ref_align,
-                is_reverse=False,
-            ),
-        )
+        variant["pos"] = normalize_position(params.ref1pos + pos_base(variant["pos"]) - insertions)
     elif params.primers.is_reverse:
-        _transform_reverse_strand(variant, params)
+        _transform_reverse_strand(variant, params, insertions)
 
     # Re-detect heteroplasmy after strand transformation (SNPs only)
     _redetect_heteroplasmy(variant, params)
 
+    new_insertions = 0
     # Format insertion positions (e.g., 316 insert C -> 315.1); consecutive
     # insertions at the same base position get .1, .2, .3, ... suffixes.
     if variant["ref"] == "-":
@@ -586,6 +637,9 @@ def _transform_variant_position(
             insertion_count_at_pos[base_pos] = 0
         insertion_count_at_pos[base_pos] += 1
         variant["pos"] = f"{base_pos}.{insertion_count_at_pos[base_pos]}"
+        new_insertions = 1
+
+    return new_insertions
 
 
 def update_variant_positions(
@@ -607,8 +661,10 @@ def update_variant_positions(
     if position_params.primers.is_reverse:
         variants_to_process = sorted(variants, key=lambda x: x["index"], reverse=True)
 
+    insertions = 0
     insertion_count_at_pos: dict[int, int] = {}
     for variant in variants_to_process:
-        _transform_variant_position(variant, position_params, insertion_count_at_pos)
+        new_ins = _transform_variant_position(variant, position_params, insertions, insertion_count_at_pos)
+        insertions += new_ins
 
     return file_intervals

@@ -79,14 +79,14 @@ bash scripts/pipeline.sh -l /path/to/samples.txt -s 3,4 MS_191125_004
 
 ```bash
 # Build
-docker build -t mtdna:v1 .
+docker build -t mtdna_raw:v1 .
 
 # Run
 docker run -it --rm \
   -v /path/to/data:/app/data \
   -v /path/to/results:/app/results \
   -v $(pwd)/.env:/app/.env \
-  mtdna:v1
+  mtdna_raw:v1
 ```
 
 ---
@@ -117,6 +117,19 @@ raw AB1 files
 ```
 
 ---
+
+## Population Analysis
+
+Analyze the current upstream-approved cohort with callable variant denominators and
+complete HV1+HV2+HV3 haplotypes:
+
+```bash
+uv run python -m src.modules.statistics.population --output-dir results/modules/statistics/population/new-analysis
+```
+
+The default input is `/mnt/nas/bca/mtDNA/science/results/merged/merged_statistics.json`;
+use `--input` to select another approved export. See [population analysis](docs/modules/statistics/population.md)
+for eligibility assumptions, JSON/TSV reports, confidence intervals and interpretation.
 
 ## Testing
 

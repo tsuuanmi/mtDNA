@@ -12,7 +12,6 @@ lives in ``src.tools.tracy.transforms``.
 """
 
 import json
-from copy import deepcopy
 from pathlib import Path
 from typing import Any, NamedTuple
 
@@ -28,10 +27,10 @@ from src.core.variants import (
     pos_base,
     pos_sort_key,
 )
-from src.tools.tracy.evidence import Disposition, TraceEvidence, observe
 from src.tools.tracy.transforms import (
     _create_variant,
     _CreateParams,
+    _extract_peak_data,
     _PositionParams,
     apply_all_transformations,
     update_variant_positions,
@@ -42,12 +41,9 @@ from src.tools.tracy.utils import (
     POS_16189,
     POS_16193,
     PrimerTypeInfo,
-    alignment_bounds,
     detect_heteroplasmy,
     detect_primer_type,
     detect_variant_conditions,
-    extract_peak_data,
-    normalize_ref_positions,
     validate_peak_quality,
 )
 
@@ -67,6 +63,69 @@ def _load_tracy_json(input_path: Path) -> dict[str, Any]:
     """
     with input_path.open() as f:
         return json.load(f)
+
+
+def _normalize_ref1pos(data: dict[str, Any]) -> int:
+    """Normalize ref1pos from integer (starting position) to position array.
+
+    Tracy >= 0.7.8 outputs ref1pos as a single integer (the starting reference
+    position); older versions output an array of per-column positions. Convert
+    to an array so downstream indexing works for both formats.
+
+    Args:
+        data: Tracy decompose JSON data dict (mutated in place).
+
+    Returns:
+        The scalar starting reference position (before conversion to an array).
+    """
+    if isinstance(data["ref1pos"], int):
+        start = data["ref1pos"]
+        ref_align = data["ref1align"]
+        positions: list[int] = []
+        current_pos = start
+        for ch in ref_align:
+            if ch == "-":
+                positions.append(current_pos - 1 if current_pos > start else start)
+            else:
+                positions.append(current_pos)
+                current_pos += 1
+        data["ref1pos"] = positions
+        return start
+    return data["ref1pos"][0] if data["ref1pos"] else 0
+
+
+# ---------------------------------------------------------------------------
+# Helper: compute alignment trim bounds
+# ---------------------------------------------------------------------------
+
+
+def _compute_trim_bounds(data: dict[str, Any]) -> tuple[int, int, int, int, int | None, int | None]:
+    """Compute alignment trim bounds.
+
+    Returns:
+        Tuple of (alt_start_dash, alt_end_dash, ref_start_dash,
+        ref_end_dash, start_index, end_index). start_index and
+        end_index are None if no variants found in trimmed region.
+    """
+    alt_start_dash = len(data["alt1align"]) - len(data["alt1align"].lstrip("-"))
+    alt_end_dash = len(data["alt1align"]) - len(data["alt1align"].rstrip("-"))
+    ref_start_dash = len(data["ref1align"]) - len(data["ref1align"].lstrip("-"))
+    ref_end_dash = len(data["ref1align"]) - len(data["ref1align"].rstrip("-"))
+
+    trim_left = int(max(alt_start_dash, ref_start_dash))
+    trim_right = int(max(alt_end_dash, ref_end_dash))
+
+    start_index: int | None = None
+    end_index: int | None = None
+
+    for i in range(len(data["alt1align"])):
+        if i < trim_left or i >= len(data["alt1align"]) - trim_right:
+            continue
+        if start_index is None:
+            start_index = i
+        end_index = i
+
+    return alt_start_dash, alt_end_dash, ref_start_dash, ref_end_dash, start_index, end_index
 
 
 # ---------------------------------------------------------------------------
@@ -130,7 +189,7 @@ def _call_variant_at_index(index: int, params: _CallParams) -> dict[str, Any] | 
     peak_index = index - params.deletions  # corrected basecall index
 
     # Extract peak data at the corrected basecall index
-    peak_a, peak_c, peak_g, peak_t, quality = extract_peak_data(data, peak_index)
+    peak_a, peak_c, peak_g, peak_t, quality = _extract_peak_data(data, peak_index)
     peaks: list[float | None] = [peak_a, peak_c, peak_g, peak_t]
 
     variant: dict[str, Any] = {
@@ -158,10 +217,10 @@ def _call_variant_at_index(index: int, params: _CallParams) -> dict[str, Any] | 
 # ---------------------------------------------------------------------------
 
 
-def _variant_rejection(  # noqa: PLR0911
+def _should_skip_variant(
     variant: dict[str, Any],
     config: _FilterConfig,
-) -> tuple[Disposition, str] | None:
+) -> bool:
     """Check if a variant should be skipped during filtering.
 
     Filter conditions (in order):
@@ -176,15 +235,15 @@ def _variant_rejection(  # noqa: PLR0911
     """
     # Skip variants marked for removal
     if variant.get("remove", False):
-        return "normalized", variant.get("reason", "Removed during nomenclature conversion")
+        return True
 
     # Skip 'N' bases
     if variant["seq"] == "N":
-        return "untrusted", "Unresolved base call (N)"
+        return True
 
     # Skip variants outside regions
     if not is_position_in_intervals(variant["pos"], [(int(v[0]), int(v[1])) for v in config.variant_regions.values()]):
-        return "out_of_scope", "Outside configured variant regions"
+        return True
 
     # Skip HV1 deletions except 16189 and 16193
     if (
@@ -192,7 +251,7 @@ def _variant_rejection(  # noqa: PLR0911
         and pos_base(variant["pos"]) not in [POS_16189, POS_16193]
         and variant["seq"] == "-"
     ):
-        return "untrusted", "Unsupported HV1 deletion outside 16189/16193"
+        return True
 
     # Skip low quality variants (except position 73)
     if (
@@ -200,12 +259,10 @@ def _variant_rejection(  # noqa: PLR0911
         and variant["quality"] < config.quality_threshold
         and pos_base(variant["pos"]) != POS_73
     ):
-        return "untrusted", "Below Tracy variant quality threshold"
+        return True
 
     # Validate peak quality
-    if not validate_peak_quality(variant, config.min_peak_value, config.pratio, config.sample):
-        return "untrusted", "Failed Tracy peak-quality validation"
-    return None
+    return not validate_peak_quality(variant, config.min_peak_value, config.pratio, config.sample)
 
 
 # ---------------------------------------------------------------------------
@@ -369,13 +426,12 @@ def _maybe_add_hv2f_pos73(
         file_intervals[filename].append([POS_73, 75])
 
 
-def process(  # noqa: C901, PLR0912, PLR0915
+def process(  # noqa: PLR0915
     sample_id: str,
     input_path: Path,
     *,
     ref_seq: str,
     config: _ProcessConfig | None = None,
-    evidence: TraceEvidence | None = None,
 ) -> Sample:
     """Process a single Tracy decompose JSON file into a Sample.
 
@@ -424,14 +480,14 @@ def process(  # noqa: C901, PLR0912, PLR0915
     data = _load_tracy_json(input_path)
 
     # Normalize ref1pos from integer to position array (Tracy >= 0.7.8 compat)
-    ref1pos_start = normalize_ref_positions(data)
+    ref1pos_start = _normalize_ref1pos(data)
 
     # Detect primer type from filename
     filename = input_path.stem
     primers = detect_primer_type(filename)
 
     # Compute trim bounds
-    _alt_start, _alt_end, _ref_start, _ref_end, start_index, end_index = alignment_bounds(data)
+    _alt_start, _alt_end, _ref_start, ref_end_dash, start_index, end_index = _compute_trim_bounds(data)
 
     # Parse raw variants from the alignment
     call_params = _CallParams(
@@ -470,7 +526,8 @@ def process(  # noqa: C901, PLR0912, PLR0915
     position_params = _PositionParams(
         primers=primers,
         ref1pos=ref1pos_start,
-        ref_align=data["ref1align"],
+        ref_align_len=len(data["ref1align"]),
+        ref_end_dash=ref_end_dash,
         filename=filename,
         sample=sample,
         heteroplasmy_threshold=heteroplasmy_threshold,
@@ -482,25 +539,12 @@ def process(  # noqa: C901, PLR0912, PLR0915
         end_index,
     )
 
-    if evidence is not None:
-        evidence.filename = input_path.name
-        evidence.raw_intervals = _compute_intervals(file_intervals, variant_regions)  # type: ignore[arg-type]
-        for candidate_id, variant in enumerate(raw_variants):
-            variant["candidate_id"] = candidate_id
-            variant["source_candidate_ids"] = [candidate_id]
-            snapshot = deepcopy(variant)
-            snapshot["source_positions"] = [variant["pos"]]
-            snapshot["evidence_kind"] = "measured"
-            evidence.raw_candidates.append(snapshot)
-
     # HV2F position-73 special handling.
     _maybe_add_hv2f_pos73(raw_variants, primers, transform_params, file_intervals, filename, sample)
 
     # Detect variant conditions after position update, so insertion positions
     # are decimal strings (e.g. "513.1") that conditions and remap rely on.
     conditions = detect_variant_conditions(raw_variants)
-    if evidence is not None:
-        evidence.has_16189_t_c = conditions["has_16189_T_C"]
 
     # Apply transformations
     apply_all_transformations(raw_variants, conditions, primers, transform_params)
@@ -515,19 +559,15 @@ def process(  # noqa: C901, PLR0912, PLR0915
     )
     filtered_variants: list[dict[str, Any]] = []
     for variant in raw_variants:
-        rejection = _variant_rejection(variant, filter_config)
-        if rejection is not None:
-            disposition, reason = rejection
-            observe(evidence, variant, disposition, reason)
+        if _should_skip_variant(variant, filter_config):
             if variant.get("remove", False):
+                reason = variant.get("reason", "marked for removal during conversion")
                 logger.warning(
-                    "Sample {} trace {}: Remove variant {} {}>{}, quality={} ({})",
+                    "Sample {}: Remove variant: {} {}>{} ({})",
                     sample,
-                    filename,
                     variant["pos"],
                     variant["ref"],
                     variant["seq"],
-                    variant.get("quality"),
                     reason,
                 )
             continue
@@ -535,15 +575,6 @@ def process(  # noqa: C901, PLR0912, PLR0915
         # Remove index fields before building Variant objects
         variant.pop("index", None)
         variant.pop("peak_index", None)
-        if "candidate_id" not in variant:
-            variant["evidence_kind"] = "derived"
-            variant["source_candidate_ids"] = []
-        else:
-            variant["evidence_kind"] = "measured"
-        observe(evidence, variant, "accepted", "accepted by ETL")
-        variant.pop("candidate_id", None)
-        variant.pop("source_candidate_ids", None)
-        variant.pop("evidence_kind", None)
         filtered_variants.append(variant)
 
     # Build Variant objects
@@ -567,7 +598,7 @@ def process(  # noqa: C901, PLR0912, PLR0915
         sample_id=sample_id,
         variants=variant_list,
         source_tool=Tool.TRACY,
-        intervals=intervals,
+        intervals=intervals or None,
         batch_id=batch_id,
         sample_flags=sample_flags_list or [],
         variant_flags=variant_flags_dict,

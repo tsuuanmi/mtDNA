@@ -254,7 +254,7 @@ It is **region-aware**, which is the subtle part:
   as full coverage.
 
 Because the flag depends on the actual variant set and coverage, it is recomputed
-at JSON-write time by `recompute_no_315_1_flag()` rather than trusted from stale
+at JSON-write time by `recompute_sample_flags()` rather than trusted from stale
 per-file or per-region output. This keeps each output JSON (the combined 3-region
 file and each per-region file) consistent with its own contents.
 

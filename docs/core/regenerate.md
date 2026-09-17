@@ -62,9 +62,17 @@ The output is written flat because `Batch.write(..., nest_batch_id=False)` is us
 ```text
 <output_dir>/
 ├── statistic_fullbatch.json
+├── region_table.json              # same final samples, variants grouped by HV region
 ├── SAMPLE_1/SAMPLE_1.json
 └── SAMPLE_2/SAMPLE_2.json
 ```
+
+`region_table.json` takes the just-written final `statistic_fullbatch.json` as
+its input. It preserves every top-level sample field and every canonical variant
+dict verbatim; the only change is that `variants` is regrouped from
+`snps`/`insertions`/`deletions` to `HV1`/`HV2`/`HV3`. It reuses
+`get_hv_region_for_position()` and `pos_sort_key()` from `src.core.variants`.
+An out-of-HV final variant raises an error rather than being omitted.
 
 ## CLI
 

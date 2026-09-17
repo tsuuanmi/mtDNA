@@ -154,12 +154,6 @@ so the new `Sample` reaches final-output parity with the legacy pipeline.
    strand-aware polyC `flagged_for_filtering` consensus filtering, and removes
    heterozygous single-strand variants — matching legacy
    `Analysis.concensus_variant()`.
-    BLASTn retains its independent consensus-stage polyC policy: plus-strand
-    calls at `316–335` and minus-strand calls at `283–302` are directionally
-    flagged. Tracy uses a separate, more conservative unbounded per-trace
-    directional coverage policy before merge, so the callers do not share
-    boundaries or processing stage.
-
 6. **Compute intervals** — `_compute_intervals(rows, regions)` extracts
    `forward_ref_start`/`forward_ref_end` ranges, merges them via
    `core.sample.merge_intervals`, and intersects each region's bounds via

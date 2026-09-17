@@ -13,7 +13,8 @@ under the base output directory:
   per-sample JSONs)
 - ``regions/`` — per-region intermediate JSONs (``HV1_{LID}.json``,
   ``HV2-3_{LID}.json``) written by ``write_region_jsons()``
-- ``preprocess/<sample_id>/`` — Tracy artifacts and per-sample ``qc_report.json``
+- ``preprocess/`` — Tracy decompose artifacts (``.align``, ``.decomp``,
+  ``.bcf``, ``.json`` files)
 
 The pipeline constructs these paths via ``OutputPaths`` and passes them to
 the appropriate write functions. ``Batch.write()`` and
@@ -21,7 +22,6 @@ the appropriate write functions. ``Batch.write()`` and
 """
 
 import argparse
-import json
 import os
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -39,33 +39,8 @@ from src.core.models import Sample, Tool
 from src.core.paths import OutputPaths
 from src.core.region import REGION_TO_KEYS, validate_region_group_intervals, write_region_jsons
 from src.core.sample import merge_intervals
-from src.core.variants import get_hv_region_for_position, pos_base
 from src.tools.tracy.etl import merge_variants, process
-from src.tools.tracy.evidence import TraceEvidence
 from src.tools.tracy.preprocessing import DecomposeConfig, decompose_sample
-from src.tools.tracy.qc.engine import evaluate_trace
-from src.tools.tracy.qc.models import QCConfig, TraceQCResult, error_result, unavailable_result
-from src.tools.tracy.qc.reporting import build_qc_report
-from src.tools.tracy.qc.signal_noise import analyze_trace_file
-
-
-@dataclass(frozen=True)
-class PreparedSample:
-    """Decomposed Tracy inputs and their QC results for one sample."""
-
-    sample_id: str
-    json_paths: tuple[Path, ...]
-    qc_results: tuple[TraceQCResult, ...]
-
-
-@dataclass(frozen=True)
-class ProcessedTrace:
-    """Trusted per-trace evidence and its complete QC result."""
-
-    sample_id: str
-    filename: str
-    sample: Sample
-    qc_result: TraceQCResult
 
 
 @dataclass
@@ -169,7 +144,7 @@ def _combine_same_tool_samples(samples: list[Sample], sample_id: str) -> Sample:
         sample_id=sample_id,
         variants=merged_variants,
         source_tool=Tool.TRACY,
-        intervals=merged_intervals,
+        intervals=merged_intervals or None,
         sample_flags=all_sample_flags or [],
         variant_flags=all_variant_flags,
         information=None,
@@ -226,153 +201,92 @@ def _write_full_region_jsons(
                 logger.warning("Range QC for {} {}: {}", sample_id, group_name, w)
 
 
-def _prepare_sample(
+def _process_single_sample(
     sample_id: str,
     input_dir: Path,
     preprocess_dir: Path,
+    ref_seq: str,
     ref_path: str,
-    qc_config: QCConfig,
-) -> PreparedSample:
-    """Run Tracy decompose and QC for one sample without calling variants."""
-    tracy_config = get_settings().tracy
-    json_outputs = decompose_sample(
+) -> list[dict[str, Any]]:
+    """Process a single Tracy sample: decompose → ETL.
+
+    Args:
+        sample_id: Sample identifier (LID).
+        input_dir: Directory containing AB1 trace files.
+        preprocess_dir: Directory for decompose output (``paths.preprocess_dir``).
+        ref_seq: Reference sequence string.
+        ref_path: Path to rCRS reference FASTA file.
+
+    Returns:
+        List of dicts with sample_id and sample fields (one per region group).
+    """
+    settings = get_settings()
+    tracy_cfg = settings.tracy
+    decompose_config = DecomposeConfig(
+        trim=tracy_cfg.trim,
+        pratio=tracy_cfg.pratio,
+        maxindel=tracy_cfg.maxindel,
+    )
+
+    # Step 1: Decompose AB1 files — output goes to preprocess_dir/sample_id/
+    sample_dir = decompose_sample(
         sample=sample_id,
         input_dir=str(input_dir),
         output_dir=str(preprocess_dir),
         ref_path=ref_path,
-        config=DecomposeConfig(
-            trim=tracy_config.trim,
-            pratio=tracy_config.pratio,
-            maxindel=tracy_config.maxindel,
-        ),
+        config=decompose_config,
     )
-    json_paths = tuple(path for path in json_outputs if "HV" in path.name)
-    if not json_paths:
-        logger.warning("No Tracy HV JSON files were produced for sample {}", sample_id)
-        result = unavailable_result(sample_id, "No Tracy HV JSON files were produced")
-        return PreparedSample(sample_id, (), (result,))
 
-    qc_results = tuple(
-        analyze_trace_file(path, sample_id=sample_id, config=qc_config.noise)
-        if qc_config.enabled and (qc_config.signal_noise_enabled or qc_config.polyc_enabled)
-        else unavailable_result(sample_id, "Trace QC disabled", filename=path.name)
-        for path in json_paths
-    )
-    return PreparedSample(sample_id, json_paths, qc_results)
+    if not sample_dir or not Path(sample_dir).is_dir():
+        logger.error("Decompose failed for sample {}: no output directory", sample_id)
+        return []
+
+    # Step 2: Process JSON files from decompose output
+    return _process_sample_json_files(sample_id, Path(sample_dir), ref_seq)
 
 
-def _process_prepared_sample(
-    prepared: PreparedSample,
+def _process_sample_json_files(
+    sample_id: str,
+    sample_dir: Path,
     ref_seq: str,
-    *,
-    qc_config: QCConfig,
-) -> list[ProcessedTrace]:
-    """Build raw ETL evidence, then optionally derive trusted trace evidence."""
-    qc_by_filename = {result.filename: result for result in prepared.qc_results if result.filename is not None}
-    results: list[ProcessedTrace] = []
-    for json_path in prepared.json_paths:
-        qc_result = qc_by_filename.get(json_path.name)
-        if qc_result is None:
-            qc_result = unavailable_result(prepared.sample_id, "No trace QC result", filename=json_path.name)
+) -> list[dict[str, Any]]:
+    """Process JSON files from Tracy decompose output for a single sample.
+
+    Args:
+        sample_id: Sample identifier (LID).
+        sample_dir: Directory containing decompose JSON output.
+        ref_seq: Reference sequence string.
+
+    Returns:
+        List of dicts with sample_id and sample fields (one per region group).
+    """
+    json_files = [p for p in sample_dir.glob("*.json") if "HV" in p.name]
+
+    if not json_files:
+        logger.warning("No JSON files found for sample {} in {}", sample_id, sample_dir)
+        return []
+
+    results: list[dict[str, Any]] = []
+
+    for json_file in json_files:
         try:
-            evidence = TraceEvidence()
-            sample = process(sample_id=prepared.sample_id, input_path=json_path, ref_seq=ref_seq, evidence=evidence)
-            if qc_config.enabled:
-                data = json.loads(json_path.read_text(encoding="utf-8")) if qc_config.read_edge_enabled else {}
-                sample, qc_result = evaluate_trace(sample, evidence, qc_result, qc_config, data)
-        except (ValueError, KeyError, OSError, RuntimeError) as error:
-            logger.error("ETL failed for sample {} file {}: {}", prepared.sample_id, json_path.name, error)
+            sample = process(
+                sample_id=sample_id,
+                input_path=json_file,
+                ref_seq=ref_seq,
+            )
+        except (ValueError, KeyError, OSError, RuntimeError) as e:
+            logger.error("ETL failed for sample {} file {}: {}", sample_id, json_file.name, e)
             continue
-        results.append(ProcessedTrace(prepared.sample_id, json_path.name, sample, qc_result))
+
+        results.append(
+            {
+                "sample_id": sample_id,
+                "sample": sample,
+            },
+        )
+
     return results
-
-
-def _write_sample_qc_reports(
-    preprocess_dir: Path,
-    prepared_samples: list[PreparedSample],
-    processed_traces: list[ProcessedTrace],
-    config: QCConfig,
-) -> None:
-    """Write one deterministic report containing per-trace evidence decisions."""
-    evaluated = {(trace.sample_id, trace.filename): trace.qc_result for trace in processed_traces}
-    for prepared in sorted(prepared_samples, key=lambda item: item.sample_id):
-        sample_dir = preprocess_dir / prepared.sample_id
-        sample_dir.mkdir(parents=True, exist_ok=True)
-        report_path = sample_dir / "qc_report.json"
-        qc_results = [
-            evaluated.get((prepared.sample_id, result.filename or ""), result) for result in prepared.qc_results
-        ]
-        report = build_qc_report(qc_results, config.noise)
-        report["assessors"] = {
-            "enabled": config.enabled,
-            "signal_noise_enabled": config.signal_noise_enabled,
-            "polyc_enabled": config.polyc_enabled,
-            "read_edge_enabled": config.read_edge_enabled,
-        }
-        report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-        logger.info("Wrote Tracy QC report to {}", report_path)
-
-
-def _prepare_batch(
-    sample_ids: list[str],
-    input_dir: Path,
-    preprocess_dir: Path,
-    ref_path: str,
-    qc_config: QCConfig,
-    max_workers: int,
-) -> list[PreparedSample]:
-    """Decompose and analyze all requested samples in parallel."""
-    prepared_samples: list[PreparedSample] = []
-    with ProcessPoolExecutor(max_workers=max_workers) as executor:
-        futures = {
-            executor.submit(
-                _prepare_sample,
-                sample_id,
-                input_dir,
-                preprocess_dir,
-                ref_path,
-                qc_config,
-            ): sample_id
-            for sample_id in sample_ids
-        }
-        for future in as_completed(futures):
-            sample_id = futures[future]
-            try:
-                prepared = future.result()
-            except (ValueError, KeyError, OSError, RuntimeError) as error:
-                logger.error("Tracy preparation failed for sample {}: {}", sample_id, error)
-                prepared = PreparedSample(sample_id, (), (error_result(sample_id, str(error)),))
-            prepared_samples.append(prepared)
-    return prepared_samples
-
-
-def _process_prepared_batch(
-    prepared_samples: list[PreparedSample],
-    ref_seq: str,
-    max_workers: int,
-    *,
-    qc_config: QCConfig,
-) -> list[ProcessedTrace]:
-    """Run ETL and optional trace-evidence QC in parallel."""
-    processed: list[ProcessedTrace] = []
-    with ProcessPoolExecutor(max_workers=max_workers) as executor:
-        futures = {
-            executor.submit(
-                _process_prepared_sample,
-                prepared,
-                ref_seq,
-                qc_config=qc_config,
-            ): prepared.sample_id
-            for prepared in prepared_samples
-            if prepared.json_paths
-        }
-        for future in as_completed(futures):
-            sample_id = futures[future]
-            try:
-                processed.extend(future.result())
-            except (ValueError, KeyError, OSError, RuntimeError) as error:
-                logger.error("ETL processing failed for sample {}: {}", sample_id, error)
-    return processed
 
 
 def process_batch(
@@ -382,9 +296,10 @@ def process_batch(
 ) -> dict[str, Sample]:
     """Process Tracy samples in parallel.
 
-    Reads sample IDs from a TXT file, runs decompose and QC, processes each
-    resulting JSON through ETL and optional noise masking, combines same-LID
-    samples, and writes json/, regions/, and preprocess/ outputs.
+    Reads sample IDs from a TXT file, runs Tracy decompose for each sample,
+    processes each resulting JSON file through ETL in parallel, combines
+    same-LID Samples, and writes output organized into json/, regions/,
+    preprocess/ subdirectories.
 
     Args:
         input_dir: Directory containing AB1 trace files.
@@ -406,11 +321,7 @@ def process_batch(
     # Load reference sequence (shared across all samples)
     ref_seq = str(SeqIO.read(options.ref_path, "fasta").seq)
 
-    # Remove the obsolete batch-level report if this output directory is reused.
-    (paths.preprocess_dir / "qc_report.json").unlink(missing_ok=True)
-
     # Read sample IDs from TXT file (always required)
-    qc_config = QCConfig.from_settings()
     if options.samples_path is None:
         logger.error("No samples_path provided — sample IDs must come from a TXT file")
         return {}
@@ -427,26 +338,29 @@ def process_batch(
         options.samples_path,
     )
 
-    tracy_settings = get_settings().tracy
-    max_workers = tracy_settings.max_workers or max(1, os.cpu_count() or 1)
+    max_workers = get_settings().tracy.max_workers or max(1, os.cpu_count() or 1)
 
-    # Phase 1: decompose and analyze traces.
-    prepared_samples = _prepare_batch(
-        sample_ids,
-        input_dir,
-        paths.preprocess_dir,
-        options.ref_path,
-        qc_config,
-        max_workers,
-    )
-    # Phase 2: process and mask each trace before same-sample merging.
-    processed = _process_prepared_batch(
-        prepared_samples,
-        ref_seq,
-        max_workers,
-        qc_config=qc_config,
-    )
-    _write_sample_qc_reports(paths.preprocess_dir, prepared_samples, processed, qc_config)
+    # Process each sample in parallel — decompose output goes to preprocess_dir
+    processed: list[dict[str, Any]] = []
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(
+                _process_single_sample,
+                sample_id,
+                input_dir,
+                paths.preprocess_dir,
+                ref_seq,
+                options.ref_path,
+            ): sample_id
+            for sample_id in sample_ids
+        }
+        for future in as_completed(futures):
+            sample_id = futures[future]
+            try:
+                results = future.result()
+                processed.extend(results)
+            except (ValueError, KeyError, OSError, RuntimeError) as e:
+                logger.error("Processing failed for sample {}: {}", sample_id, e)
 
     if not processed:
         logger.warning("No samples successfully processed")
@@ -479,55 +393,30 @@ def process_batch(
         len(combined),
         len(processed),
     )
-    failed = len(set(sample_ids).difference(combined))
-    if failed:
+    if len(processed) < len(sample_ids):
+        failed = len(sample_ids) - len(processed)
         logger.warning("{} sample(s) failed processing", failed)
 
     return combined
 
 
-def _trace_covers(sample: Sample, position: int) -> bool:
-    """Return whether a trusted trace supports a reference observation."""
-    return any(start <= position <= end for spans in (sample.intervals or {}).values() for start, end in spans)
+def _build_combined_samples(processed: list[dict[str, Any]]) -> dict[str, Sample]:
+    """Group processed results by sample_id and combine same-LID Samples.
 
+    Args:
+        processed: List of dicts with sample_id and sample fields.
 
-def _trusted_trace_conflicts(traces: list[ProcessedTrace]) -> list[str]:
-    """Describe only disagreements between independently trusted observations."""
-    flags: list[str] = []
-    for index, left in enumerate(traces):
-        for right in traces[index + 1 :]:
-            positions = {
-                pos_base(v.pos)
-                for v in [*left.sample.variants, *right.sample.variants]
-                if len(v.ref) == 1 and v.ref != "-"
-            }
-            for position in sorted(positions):
-                left_calls = {v.seq for v in left.sample.variants if pos_base(v.pos) == position and len(v.ref) == 1}
-                right_calls = {v.seq for v in right.sample.variants if pos_base(v.pos) == position and len(v.ref) == 1}
-                left_alleles = left_calls or ({"reference"} if _trace_covers(left.sample, position) else set())
-                right_alleles = right_calls or ({"reference"} if _trace_covers(right.sample, position) else set())
-                if left_alleles and right_alleles and left_alleles != right_alleles:
-                    region = get_hv_region_for_position(position) or "unknown"
-                    flags.append(
-                        f"TRACE_CONFLICT region={region} interval=[{position},{position}] "
-                        f"traces=[{left.filename},{right.filename}]"
-                    )
-    return list(dict.fromkeys(flags))
-
-
-def _build_combined_samples(processed: list[ProcessedTrace]) -> dict[str, Sample]:
-    """Group trusted traces and promote only unresolved trace conflicts."""
-    grouped: dict[str, list[ProcessedTrace]] = defaultdict(list)
-    for trace in processed:
-        grouped[trace.sample_id].append(trace)
+    Returns:
+        Dict mapping sample_id to combined Sample.
+    """
+    grouped: dict[str, list[Sample]] = defaultdict(list)
+    for item in processed:
+        grouped[item["sample_id"]].append(item["sample"])
 
     combined: dict[str, Sample] = {}
-    for sample_id, traces in grouped.items():
-        sample = _combine_same_tool_samples([trace.sample for trace in traces], sample_id)
-        conflicts = _trusted_trace_conflicts(traces)
-        if conflicts:
-            sample = sample.model_copy(update={"sample_flags": [*sample.sample_flags, *conflicts]})
-        combined[sample_id] = sample
+    for sample_id, samples in grouped.items():
+        combined[sample_id] = _combine_same_tool_samples(samples, sample_id)
+
     return combined
 
 

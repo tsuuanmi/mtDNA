@@ -27,6 +27,7 @@ from loguru import logger
 
 from src.core.batch import Batch
 from src.core.models import Sample
+from src.core.region_table import write_region_grouped_table
 from src.core.sample import filter_sample_by_regions, load_sample
 
 ALL_REGIONS = ["HV1", "HV2", "HV3"]
@@ -68,6 +69,14 @@ def filter_to_intervals(sample: Sample) -> Sample:
     return filtered if filtered is not None else sample
 
 
+def _write_final_region_table(output_dir: Path) -> None:
+    """Write the region-grouped view of the authoritative final batch JSON."""
+    statistic_fullbatch_path = output_dir / "statistic_fullbatch.json"
+    table_path = output_dir / "region_table.json"
+    write_region_grouped_table(statistic_fullbatch_path, table_path)
+    logger.success("Wrote final region table to {}", table_path)
+
+
 def regenerate(input_dir: str | Path, output_dir: str | Path, ref_path: str, batch_id: str) -> int:
     """Filter raw tool JSON into the regenerate (final) directory.
 
@@ -94,6 +103,7 @@ def regenerate(input_dir: str | Path, output_dir: str | Path, ref_path: str, bat
 
     filtered = [filter_to_intervals(s) for s in samples]
     Batch(filtered, ref_path=ref_path).write(str(output_dir), batch_id, nest_batch_id=False)
+    _write_final_region_table(output_dir)
     logger.success("Regenerate wrote {} filtered samples to {}", len(filtered), output_dir)
     return len(filtered)
 
